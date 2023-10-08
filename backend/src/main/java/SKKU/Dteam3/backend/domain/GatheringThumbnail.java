@@ -17,7 +17,7 @@ public class GatheringThumbnail {
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "gathering_id")
     private Gathering gathering;
 
     private String originalName;

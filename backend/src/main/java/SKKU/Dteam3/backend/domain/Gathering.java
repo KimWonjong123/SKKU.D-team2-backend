@@ -17,7 +17,7 @@ public class Gathering {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "leader_id")
     private User leader;
 
     private String name;
