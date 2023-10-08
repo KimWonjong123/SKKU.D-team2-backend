@@ -18,9 +18,11 @@ public class Todo {
     @Column(nullable = false)
     private String content;
 
+    @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private LocalDate startDate;
 
+    @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private LocalDate endDate;
 

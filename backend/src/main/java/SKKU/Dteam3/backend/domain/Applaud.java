@@ -5,24 +5,33 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TodoImage {
+public class Applaud {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private String originalName;
+    private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "todo_id", nullable = false)
     private Todo todo;
 
-    public TodoImage(String originalName, Todo todo) {
-        this.originalName = originalName;
+    public Applaud(User user, Todo todo) {
+        this.createdAt = LocalDateTime.now();
+        this.user = user;
         this.todo = todo;
     }
 }

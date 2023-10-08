@@ -8,21 +8,26 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TodoImage {
+public class Result {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String originalName;
+    private boolean isDone;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "todo_id", nullable = false)
     private Todo todo;
 
-    public TodoImage(String originalName, Todo todo) {
-        this.originalName = originalName;
+    public Result(User user, Todo todo) {
+        this.isDone = false;
+        this.user = user;
         this.todo = todo;
     }
 }
