@@ -26,4 +26,11 @@ public class WordOfTheDay {
 
     private String position; //아직 저장 방식 협의 안됨
 
+    public WordOfTheDay(User user, String content, String position) {
+        this.user = user;
+        this.content = content;
+        this.position = position;
+    }
+
+    //비지니스 로직
 }

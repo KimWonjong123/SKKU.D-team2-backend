@@ -38,4 +38,32 @@ public class Gathering {
         this.description = description;
         this.createdAt = LocalDateTime.now();
     }
+
+    //비지니스 로직
+
+    public boolean increaseMemberNum() {
+        if(this.memberNum.equals(this.memberMax)) return false;
+        else {
+            this.memberNum++;
+            return true;
+        }
+    }
+
+    public boolean decreaseMemberNum(User user) {
+        if(!existMember(user, this)) return false;
+        else {
+            this.memberNum--;
+            return true;
+        }
+    }
+
+    private boolean existMember(User user, Gathering gathering) {
+        //find in GatheringMemberRepository
+        return true;
+    }
+
+    public void modifyGathering(String name, String description){
+        this.name = name;
+        this.description = description;
+    }
 }

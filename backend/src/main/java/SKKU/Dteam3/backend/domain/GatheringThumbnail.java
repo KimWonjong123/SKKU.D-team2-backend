@@ -22,5 +22,12 @@ public class GatheringThumbnail {
 
     private String originalName;
 
+    public GatheringThumbnail(Gathering gathering, String originalName) {
+        this.gathering = gathering;
+        this.originalName = originalName;
+    }
 
+    public boolean changeThumbnail(){  //사진 저장 방식 결정 해야함
+        return true;
+    }
 }
