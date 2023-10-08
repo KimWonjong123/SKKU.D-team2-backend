@@ -10,24 +10,30 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class Poke {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String name;
+    private int poked;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime lastPoke;
 
-    public User(String email, String name) {
-        this.email = email;
-        this.name = name;
-        this.createdAt = LocalDateTime.now();
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "todo_id", nullable = false)
+    private Todo todo;
+
+    public Poke(User user, Todo todo) {
+        this.poked = 0;
+        this.lastPoke = null;
+        this.user = user;
+        this.todo = todo;
     }
 }
