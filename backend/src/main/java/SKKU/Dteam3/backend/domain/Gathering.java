@@ -36,6 +36,10 @@ public class Gathering {
 
     private Integer memberMax = 14;
 
+    public void setId(Long id) {  /// temporary. Must delete when connect Mysql
+        this.id = id;
+    }
+
     public Gathering(User leader, String name, String description) {
         this.leader = leader;
         this.name = name;
