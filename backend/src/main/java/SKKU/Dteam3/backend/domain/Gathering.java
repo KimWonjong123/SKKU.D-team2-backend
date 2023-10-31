@@ -20,6 +20,10 @@ public class Gathering {
     @JoinColumn(name = "leader_id")
     private User leader;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "routine_id")
+    private RoutineInfo gatherRoutine;
+
     private String name;
 
     private String description;
