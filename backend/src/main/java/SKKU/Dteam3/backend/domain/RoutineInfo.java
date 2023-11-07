@@ -17,6 +17,10 @@ public class RoutineInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne
+    @JoinColumn(name = "town_id")
+    private Town town;
+
     @NotNull
     @Temporal(TemporalType.DATE)
     private LocalDate startDate;
@@ -57,4 +61,19 @@ public class RoutineInfo {
         this.sat = sat;
         this.sun = sun;
     }
+
+    public RoutineInfo(Town town, LocalDate startDate, LocalDate endDate, boolean mon, boolean tue, boolean wed, boolean thu, boolean fri, boolean sat, boolean sun) {
+        this.town = town;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.mon = mon;
+        this.tue = tue;
+        this.wed = wed;
+        this.thu = thu;
+        this.fri = fri;
+        this.sat = sat;
+        this.sun = sun;
+    }
+
+
 }
