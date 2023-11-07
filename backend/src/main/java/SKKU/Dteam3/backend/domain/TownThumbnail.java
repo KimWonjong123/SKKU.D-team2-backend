@@ -1,6 +1,7 @@
 package SKKU.Dteam3.backend.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,10 @@ public class TownThumbnail {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "town_id")
+    @NotNull
     private Town town;
 
+    @NotNull
     private String originalName;
 
     public TownThumbnail(Town town, String originalName) {
