@@ -10,20 +10,20 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GatheringThumbnail {
+public class TownThumbnail {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gathering_id")
-    private Gathering gathering;
+    @JoinColumn(name = "town_id")
+    private Town town;
 
     private String originalName;
 
-    public GatheringThumbnail(Gathering gathering, String originalName) {
-        this.gathering = gathering;
+    public TownThumbnail(Town town, String originalName) {
+        this.town = town;
         this.originalName = originalName;
     }
 
