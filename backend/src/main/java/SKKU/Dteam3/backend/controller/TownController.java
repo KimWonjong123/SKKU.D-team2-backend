@@ -1,32 +1,30 @@
 package SKKU.Dteam3.backend.controller;
 
 import SKKU.Dteam3.backend.Repository.TownRepository;
-import SKKU.Dteam3.backend.domain.Gathering;
+import SKKU.Dteam3.backend.domain.Town;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/town")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GatherController {
+public class TownController {
 
     private TownRepository townRepository;
 
     @GetMapping("/my/{townId}")
     public String myTown(@PathVariable Long townId, Model model){
-        Gathering gathering = townRepository.findBytownId(townId);
-        model.addAttribute("town",gathering);
+        Town town = townRepository.findBytownId(townId);
+        model.addAttribute("town", town);
         return "town/my/{townId}";
     }
 
     @PostMapping("/modify/{townId}")
-    public String modifyTown(@PathVariable Long townId, @ModelAttribute Gathering gathering){
-        townRepository.save(gathering);
+    public String modifyTown(@PathVariable Long townId, @ModelAttribute Town town){
+        townRepository.save(town);
         return "town/my/{townId}";
     }
 

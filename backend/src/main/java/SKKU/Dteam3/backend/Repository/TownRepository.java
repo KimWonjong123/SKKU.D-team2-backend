@@ -1,6 +1,6 @@
 package SKKU.Dteam3.backend.Repository;
 
-import SKKU.Dteam3.backend.domain.Gathering;
+import SKKU.Dteam3.backend.domain.Town;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -11,20 +11,19 @@ import java.util.Map;
 @Repository
 public class TownRepository {
 
-    private static final Map<Long, Gathering> store = new HashMap<>();
+    private static final Map<Long, Town> store = new HashMap<>();
 
     private static long sequence = 0L;
 
-    public Gathering findBytownId(Long id) {return store.get(id);}
+    public Town findBytownId(Long id) {return store.get(id);}
 
-    public List<Gathering> findByuserId(Long id) {return new ArrayList<>(store.values());} //jsql 필요
-    public List<Gathering> findAll(){
+    public List<Town> findByuserId(Long id) {return new ArrayList<>(store.values());} //jsql 필요
+    public List<Town> findAll(){
         return new ArrayList<>(store.values());
     }
 
-    public Gathering save(Gathering gathering){
-        gathering.setId(++sequence);
-        store.put(gathering.getId(),gathering);
-        return gathering;
+    public Town save(Town town){
+        store.put(town.getId(), town);
+        return town;
     }
 }
