@@ -1,6 +1,7 @@
 package SKKU.Dteam3.backend.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Gathering {
+public class Town {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,27 +21,19 @@ public class Gathering {
     @JoinColumn(name = "leader_id")
     private User leader;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "routine_id")
-    private RoutineInfo gatherRoutine;
-
+    @NotNull
     private String name;
 
+    @NotNull
     private String description;
 
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-
+    @NotNull
     private Integer memberNum = 1;
 
-    private Integer memberMax = 14;
-
-    public void setId(Long id) {  /// temporary. Must delete when connect Mysql
-        this.id = id;
-    }
-
-    public Gathering(User leader, String name, String description) {
+    public Town(User leader, String name, String description) {
         this.leader = leader;
         this.name = name;
         this.description = description;
@@ -50,11 +43,8 @@ public class Gathering {
     //비지니스 로직
 
     public boolean increaseMemberNum() {
-        if(this.memberNum.equals(this.memberMax)) return false;
-        else {
-            this.memberNum++;
-            return true;
-        }
+        this.memberNum++;
+        return true;
     }
 
     public boolean decreaseMemberNum(User user) {
@@ -65,12 +55,12 @@ public class Gathering {
         }
     }
 
-    private boolean existMember(User user, Gathering gathering) {
-        //find in GatheringMemberRepository
+    private boolean existMember(User user, Town town) {
+        //TODO: find in TownMemberRepository
         return true;
     }
 
-    public void modifyGathering(String name, String description){
+    public void modifyTown(String name, String description){
         this.name = name;
         this.description = description;
     }
