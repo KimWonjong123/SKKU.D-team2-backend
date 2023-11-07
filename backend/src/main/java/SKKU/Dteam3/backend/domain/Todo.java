@@ -1,11 +1,12 @@
 package SKKU.Dteam3.backend.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -15,34 +16,31 @@ public class Todo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @NotNull
+    private LocalDateTime createdAt;
+
+    @NotNull
     private String content;
 
-    @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
-    private LocalDate startDate;
-
-    @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
-    private LocalDate endDate;
-
-    @Column(nullable = false)
+    @NotNull
     private String todoClass;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
+    @NotNull
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "routine_id", nullable = true)
+    @JoinColumn(name = "routine_info_id")
+    @NotNull
     private RoutineInfo routineInfo;
 
-    public Todo(String content, LocalDate startDate, LocalDate endDate, String todoClass, User user) {
+    public Todo(String content, String todoClass, User user, RoutineInfo routineInfo) {
         this.content = content;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.createdAt = LocalDateTime.now();
         this.todoClass = todoClass;
         this.user = user;
-        this.routineInfo = null;
+        this.routineInfo = routineInfo;
     }
 }
