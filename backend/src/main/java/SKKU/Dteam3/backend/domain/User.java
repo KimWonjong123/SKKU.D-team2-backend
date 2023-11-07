@@ -1,6 +1,7 @@
 package SKKU.Dteam3.backend.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,14 +16,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotNull
     private String email;
 
-    @Column(nullable = false)
+    @NotNull
     private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
+    @NotNull
     private LocalDateTime createdAt;
 
     public User(String email, String name) {
