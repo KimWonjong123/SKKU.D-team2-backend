@@ -1,9 +1,11 @@
 package SKKU.Dteam3.backend.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.aspectj.weaver.ast.Not;
 
 import java.time.LocalDateTime;
 
@@ -16,23 +18,22 @@ public class Poke {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private int poked;
-
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime lastPoke;
+    @NotNull
+    private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "user_id")
+    @NotNull
+    private User user; // 찌른 사람
 
     @ManyToOne
-    @JoinColumn(name = "todo_id", nullable = false)
+    @JoinColumn(name = "todo_id")
+    @NotNull
     private Todo todo;
 
     public Poke(User user, Todo todo) {
-        this.poked = 0;
-        this.lastPoke = null;
+        this.createdAt = LocalDateTime.now();
         this.user = user;
         this.todo = todo;
     }
