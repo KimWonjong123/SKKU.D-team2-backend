@@ -8,6 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 @RequestMapping("/town")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,8 +26,9 @@ public class TownController {
     }
 
     @PostMapping("/town/{townId}")
-    public String modifyTown(@PathVariable Long townId, @ModelAttribute Town town){
-        townRepository.saveTown(town);
+    public String findAllMyTown(@PathVariable Long userId, Model model){
+        List<Town> towns = townRepository.findByUserId(userId);
+        model.addAttribute("towns", towns);
         return "town/my/{townId}";
     }
 

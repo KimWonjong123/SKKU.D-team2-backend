@@ -24,7 +24,7 @@ public class TownRepository {
         return em.createQuery("select t from Town t inner join TownMember tm inner join User u where u.id = :id",Town.class)
                 .setParameter("id", id)
                 .getResultList();
-    }//jsql 필요
+    }
 
     public Long saveTown(Town town){
         em.persist(town);
