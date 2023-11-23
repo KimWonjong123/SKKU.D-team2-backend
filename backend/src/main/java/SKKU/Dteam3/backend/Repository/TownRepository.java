@@ -1,6 +1,8 @@
 package SKKU.Dteam3.backend.Repository;
 
 import SKKU.Dteam3.backend.domain.Town;
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,21 +11,23 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
+@RequiredArgsConstructor
 public class TownRepository {
 
-    private static final Map<Long, Town> store = new HashMap<>();
+    private final EntityManager em;
 
-    private static long sequence = 0L;
 
-    public Town findBytownId(Long id) {return store.get(id);}
 
-    public List<Town> findByuserId(Long id) {return new ArrayList<>(store.values());} //jsql 필요
-    public List<Town> findAll(){
-        return new ArrayList<>(store.values());
-    }
+    public Town findByTownId(Long id) {return em.find(Town.class,id);}
 
-    public Town save(Town town){
-        store.put(town.getId(), town);
-        return town;
+    public List<Town> findByUserId(Long id) {
+        return em.createQuery("select t from Town t inner join TownMember tm inner join User u where u.id = :id",Town.class)
+                .setParameter("id", id)
+                .getResultList();
+    }//jsql 필요
+
+    public Long saveTown(Town town){
+        em.persist(town);
+        return town.getId();
     }
 }

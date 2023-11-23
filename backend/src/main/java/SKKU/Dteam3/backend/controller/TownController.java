@@ -15,16 +15,16 @@ public class TownController {
 
     private TownRepository townRepository;
 
-    @GetMapping("/my/{townId}")
+    @GetMapping("/town/{townId}")
     public String myTown(@PathVariable Long townId, Model model){
-        Town town = townRepository.findBytownId(townId);
+        Town town = townRepository.findByTownId(townId);
         model.addAttribute("town", town);
         return "town/my/{townId}";
     }
 
-    @PostMapping("/modify/{townId}")
+    @PostMapping("/town/{townId}")
     public String modifyTown(@PathVariable Long townId, @ModelAttribute Town town){
-        townRepository.save(town);
+        townRepository.saveTown(town);
         return "town/my/{townId}";
     }
 
