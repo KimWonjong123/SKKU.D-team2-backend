@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 public class TownRepositoryTest {
-    //@Autowired
-    //UserRepository;
+    @Autowired
+    UserRepository userRepository;
     @Autowired
     TownRepository townRepository;
 
