@@ -21,7 +21,7 @@ public class TownRepository {
     public Town findByTownId(Long id) {return em.find(Town.class,id);}
 
     public List<Town> findByUserId(Long id) {
-        return em.createQuery("select t from Town t inner join TownMember tm inner join User u where u.id = :id",Town.class)
+        return em.createQuery("select tm from TownMember tm inner join tm.town t inner join tm.user u where u.id = :id",Town.class)
                 .setParameter("id", id)
                 .getResultList();
     }
