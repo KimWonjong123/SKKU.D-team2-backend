@@ -50,6 +50,5 @@ public class TownRepositoryTest {
 
         List<Town> getTownList = townRepository.findByUserId(member1.getId());
         assertEquals(townList.size(), getTownList.size(),"유저가 속한 모든 Town이 반환되어야 한다.");
-
     }
 }
