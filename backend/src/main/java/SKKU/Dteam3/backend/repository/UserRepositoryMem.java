@@ -1,7 +1,6 @@
-package SKKU.Dteam3.backend.Repository;
+package SKKU.Dteam3.backend.repository;
 
 import SKKU.Dteam3.backend.domain.User;
-import jakarta.validation.constraints.Null;
 
 import java.util.HashMap;
 import java.util.List;

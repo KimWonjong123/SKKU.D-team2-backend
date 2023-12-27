@@ -1,6 +1,6 @@
 package SKKU.Dteam3.backend.controller;
 
-import SKKU.Dteam3.backend.Repository.TownRepository;
+import SKKU.Dteam3.backend.repository.TownRepository;
 import SKKU.Dteam3.backend.domain.Town;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

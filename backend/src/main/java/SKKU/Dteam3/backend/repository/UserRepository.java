@@ -1,4 +1,4 @@
-package SKKU.Dteam3.backend.Repository;
+package SKKU.Dteam3.backend.repository;
 
 import SKKU.Dteam3.backend.domain.User;
 
