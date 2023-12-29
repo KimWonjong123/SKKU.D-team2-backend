@@ -20,12 +20,12 @@ public class UserRepositoryMem implements UserRepository{
     }
 
     @Override
-    public Optional<User> getById(Long id) {
+    public Optional<User> findById(Long id) {
         return Optional.ofNullable(store.get(id));
     }
 
     @Override
-    public Optional<User> getByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         return Optional.empty();
     }
 
