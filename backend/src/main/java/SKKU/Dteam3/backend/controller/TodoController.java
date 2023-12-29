@@ -4,6 +4,8 @@ import SKKU.Dteam3.backend.Repository.UserRepository;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.AddTodoRequestDto;
 import SKKU.Dteam3.backend.dto.AddTodoResponseDto;
+import SKKU.Dteam3.backend.dto.CheckTodoResponseDto;
+import SKKU.Dteam3.backend.dto.UncheckTodoResponseDto;
 import SKKU.Dteam3.backend.service.TodoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,22 @@ public class TodoController {
         return todoService.addTodo(
                 requestDto,
                 user
+        );
+    }
+
+    @PatchMapping("/{todoId}/check")
+    @ResponseStatus(HttpStatus.OK)
+    public CheckTodoResponseDto checkTodo(@PathVariable("todoId") Long todoId) {
+        return todoService.checkTodo(
+                todoId
+        );
+    }
+
+    @PatchMapping("/{todoId}/uncheck")
+    @ResponseStatus(HttpStatus.OK)
+    public UncheckTodoResponseDto uncheckTodo(@PathVariable("todoId") Long todoId) {
+        return todoService.uncheckTodo(
+                todoId
         );
     }
 }

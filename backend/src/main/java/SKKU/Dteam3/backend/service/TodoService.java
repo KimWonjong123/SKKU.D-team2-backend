@@ -3,11 +3,14 @@ package SKKU.Dteam3.backend.service;
 import SKKU.Dteam3.backend.Repository.ResultRepository;
 import SKKU.Dteam3.backend.Repository.RoutineInfoRepository;
 import SKKU.Dteam3.backend.Repository.TodoRepository;
+import SKKU.Dteam3.backend.domain.Result;
 import SKKU.Dteam3.backend.domain.RoutineInfo;
 import SKKU.Dteam3.backend.domain.Todo;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.AddTodoRequestDto;
 import SKKU.Dteam3.backend.dto.AddTodoResponseDto;
+import SKKU.Dteam3.backend.dto.CheckTodoResponseDto;
+import SKKU.Dteam3.backend.dto.UncheckTodoResponseDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -64,5 +67,31 @@ public class TodoService {
         );
         resultRepository.save(result);
         return new AddTodoResponseDto(todo.getId(), todo.getCreatedAt());
+    }
+
+    public CheckTodoResponseDto checkTodo(Long todoId) {
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Todo가 없습니다.")
+        );
+        Result result = resultRepository.finyByTodo(
+                todo
+        ).orElseThrow(
+                () -> new IllegalArgumentException("해당 Todo에 해당하는 Result가 없습니다.")
+        );
+        result.check();
+        return new CheckTodoResponseDto(todo.getId());
+    }
+
+    public UncheckTodoResponseDto uncheckTodo (Long todoId) {
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Todo가 없습니다.")
+        );
+        Result result = resultRepository.finyByTodo(
+                todo
+        ).orElseThrow(
+                () -> new IllegalArgumentException("해당 Todo에 해당하는 Result가 없습니다.")
+        );
+        result.uncheck();
+        return new UncheckTodoResponseDto(todo.getId());
     }
 }
