@@ -32,25 +32,29 @@ public class TodoService {
         Todo todo = null;
         if (requestDto.getRoutine()) {
             // 루틴일 경우
-            RoutineInfo routineInfo = new RoutineInfo(
-                    LocalDate.now(),
-                    requestDto.getEndDate().toLocalDate(),
-                    requestDto.getMon(),
-                    requestDto.getTue(),
-                    requestDto.getWed(),
-                    requestDto.getThu(),
-                    requestDto.getFri(),
-                    requestDto.getSat(),
-                    requestDto.getSun()
-            );
-            routineInfoRepository.save(routineInfo);
-            todo = new Todo(
-                    requestDto.getContent(),
-                    requestDto.getTodoClass(),
-                    user,
-                    routineInfo
-            );
-            todoRepository.save(todo);
+            try {
+                RoutineInfo routineInfo = new RoutineInfo(
+                        LocalDate.now(),
+                        requestDto.getEndDate().toLocalDate(),
+                        requestDto.getMon(),
+                        requestDto.getTue(),
+                        requestDto.getWed(),
+                        requestDto.getThu(),
+                        requestDto.getFri(),
+                        requestDto.getSat(),
+                        requestDto.getSun()
+                );
+                routineInfoRepository.save(routineInfo);
+                todo = new Todo(
+                        requestDto.getContent(),
+                        requestDto.getTodoClass(),
+                        user,
+                        routineInfo
+                );
+                todoRepository.save(todo);
+            } catch (NullPointerException e) {
+                throw new IllegalArgumentException("루틴의 상세정보가 누락되었습니다.");
+            }
         } else {
             // 루틴이 아닐 경우
             todo = new Todo(
