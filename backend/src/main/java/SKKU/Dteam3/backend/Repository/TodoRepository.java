@@ -5,6 +5,8 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class TodoRepository {
@@ -15,8 +17,9 @@ public class TodoRepository {
         em.persist(todo);
     }
 
-    public Todo findById(Long id) {
-        return em.find(Todo.class, id);
+    public Optional<Todo> findById(Long id) {
+        Todo todo = em.find(Todo.class, id);
+        return Optional.ofNullable(todo);
     }
 
     public void delete(Todo todo) {

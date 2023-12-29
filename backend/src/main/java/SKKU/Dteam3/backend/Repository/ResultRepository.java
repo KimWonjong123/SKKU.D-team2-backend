@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,8 +20,9 @@ public class ResultRepository {
         em.persist(result);
     }
 
-    public Result findById(Long id) {
-        return em.find(Result.class, id);
+    public Optional<Result> findById(Long id) {
+        Result result = em.find(Result.class, id);
+        return Optional.ofNullable(result);
     }
 
     public void delete(Result result) {
@@ -36,8 +38,13 @@ public class ResultRepository {
                 .setParameter("user", user).getResultList();
     }
 
-    public Result finyByTodo (Todo todo) {
-        return em.createQuery("select m from Result m where m.todo = :todo", Result.class)
-                .setParameter("todo", todo).getSingleResult();
+    public Optional<Result> finyByTodo (Todo todo) {
+        try {
+            Result result = em.createQuery("select m from Result m where m.todo = :todo", Result.class)
+                    .setParameter("todo", todo).getSingleResult();
+            return Optional.of(result);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }
