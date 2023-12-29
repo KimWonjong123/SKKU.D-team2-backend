@@ -58,6 +58,11 @@ public class TodoService {
             );
             todoRepository.save(todo);
         }
+        Result result = new Result(
+                user,
+                todo
+        );
+        resultRepository.save(result);
         return new AddTodoResponseDto(todo.getId(), todo.getCreatedAt());
     }
 }
