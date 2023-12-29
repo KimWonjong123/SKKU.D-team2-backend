@@ -9,21 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class TownRepository {
+public interface TownRepository {
 
-    private static final Map<Long, Town> store = new HashMap<>();
+    public Town findBytownId(Long id);
+    public List<Town> findByuserId(Long id);
+    public List<Town> findAll();
 
-    private static long sequence = 0L;
+    public Town save(Town town);
 
-    public Town findBytownId(Long id) {return store.get(id);}
-
-    public List<Town> findByuserId(Long id) {return new ArrayList<>(store.values());} //jsql 필요
-    public List<Town> findAll(){
-        return new ArrayList<>(store.values());
-    }
-
-    public Town save(Town town){
-        store.put(town.getId(), town);
-        return town;
-    }
 }
