@@ -3,15 +3,12 @@ package SKKU.Dteam3.backend.Repository;
 import SKKU.Dteam3.backend.domain.Town;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public interface TownRepository {
 
-    public Town findBytownId(Long id);
+    public Optional<Town> findBytownId(Long id);
     public List<Town> findByuserId(Long id);
     public List<Town> findAll();
 

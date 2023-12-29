@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/town")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,7 +19,7 @@ public class TownController {
 
     @GetMapping("/my/{townId}")
     public String myTown(@PathVariable Long townId, Model model){
-        Town town = townRepository.findBytownId(townId);
+        Optional<Town> town = townRepository.findBytownId(townId);
         model.addAttribute("town", town);
         return "town/my/{townId}";
     }
