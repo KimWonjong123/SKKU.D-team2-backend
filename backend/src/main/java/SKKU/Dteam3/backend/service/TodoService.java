@@ -73,10 +73,11 @@ public class TodoService {
         return new AddTodoResponseDto(todo.getId(), todo.getCreatedAt());
     }
 
-    public CheckTodoResponseDto checkTodo(Long todoId) {
+    public CheckTodoResponseDto checkTodo(Long todoId, User user) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Todo가 없습니다.")
         );
+        checkPermission(todo, user);
         Result result = resultRepository.finyByTodo(
                 todo
         ).orElseThrow(
@@ -86,10 +87,14 @@ public class TodoService {
         return new CheckTodoResponseDto(todo.getId());
     }
 
-    public UncheckTodoResponseDto uncheckTodo (Long todoId) {
+    public UncheckTodoResponseDto uncheckTodo (Long todoId, User user) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Todo가 없습니다.")
         );
+        checkPermission(todo, user);
+        if (!user.getId().equals(todo.getUser().getId())) {
+            throw new IllegalArgumentException("해당 Todo에 대한 권한이 없습니다.");
+        }
         Result result = resultRepository.finyByTodo(
                 todo
         ).orElseThrow(
@@ -97,5 +102,12 @@ public class TodoService {
         );
         result.uncheck();
         return new UncheckTodoResponseDto(todo.getId());
+    }
+
+    private void checkPermission(Todo todo, User user)
+    {
+        if (!user.getId().equals(todo.getUser().getId())) {
+            throw new IllegalArgumentException("해당 Todo에 대한 권한이 없습니다.");
+        }
     }
 }

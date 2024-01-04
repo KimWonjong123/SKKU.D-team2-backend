@@ -31,17 +31,21 @@ public class TodoController {
 
     @PatchMapping("/{todoId}/check")
     @ResponseStatus(HttpStatus.OK)
-    public CheckTodoResponseDto checkTodo(@PathVariable("todoId") Long todoId) {
+    public CheckTodoResponseDto checkTodo(@PathVariable("todoId") Long todoId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         return todoService.checkTodo(
-                todoId
+                todoId,
+                user
         );
     }
 
     @PatchMapping("/{todoId}/uncheck")
     @ResponseStatus(HttpStatus.OK)
-    public UncheckTodoResponseDto uncheckTodo(@PathVariable("todoId") Long todoId) {
+    public UncheckTodoResponseDto uncheckTodo(@PathVariable("todoId") Long todoId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         return todoService.uncheckTodo(
-                todoId
+                todoId,
+                user
         );
     }
 }
