@@ -14,6 +14,7 @@ public class RepositoryConfig {
     @Bean
     public TownRepository townRepository(EntityManager em) {
         return new TownRepositoryDB(em);
+    }
 
     @Bean
     public UserRepository userRepository(EntityManager em) {
