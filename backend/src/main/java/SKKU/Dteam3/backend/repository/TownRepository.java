@@ -1,29 +1,21 @@
 package SKKU.Dteam3.backend.repository;
 
 import SKKU.Dteam3.backend.domain.Town;
-import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
-@Repository
-public class TownRepository {
+public interface TownRepository {
+    void save(Town town);
 
-    private static final Map<Long, Town> store = new HashMap<>();
+    void update(Town town);
 
-    private static long sequence = 0L;
+    Optional<Town> findByTownId(Long id);
 
-    public Town findBytownId(Long id) {return store.get(id);}
+    List<Town> findByUserId(Long id);
 
-    public List<Town> findByuserId(Long id) {return new ArrayList<>(store.values());} //jsql 필요
-    public List<Town> findAll(){
-        return new ArrayList<>(store.values());
-    }
+    Optional<Town> findByTownName(String name);
 
-    public Town save(Town town){
-        store.put(town.getId(), town);
-        return town;
-    }
+    List<Town> findAll();
+
 }

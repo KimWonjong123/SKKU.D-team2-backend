@@ -1,7 +1,7 @@
 package SKKU.Dteam3.backend.controller;
 
-import SKKU.Dteam3.backend.repository.TownRepository;
 import SKKU.Dteam3.backend.domain.Town;
+import SKKU.Dteam3.backend.repository.TownRepository;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -17,7 +17,7 @@ public class TownController {
 
     @GetMapping("/my/{townId}")
     public String myTown(@PathVariable Long townId, Model model){
-        Town town = townRepository.findBytownId(townId);
+        Town town = townRepository.findByTownId(townId).get();
         model.addAttribute("town", town);
         return "town/my/{townId}";
     }
