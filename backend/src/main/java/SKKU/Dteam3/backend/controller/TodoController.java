@@ -55,4 +55,24 @@ public class TodoController {
                 user
         );
     }
+
+    @PostMapping("/{todoId}/poke")
+    @ResponseStatus(HttpStatus.CREATED)
+    public PokeResponseDto poke(@PathVariable("todoId") Long todoId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return todoService.poke(
+                todoId,
+                user
+        );
+    }
+
+    @PostMapping("/{todoId}/cheer")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CheerResponseDto cheer(@PathVariable("todoId") Long todoId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return todoService.cheer(
+                todoId,
+                user
+        );
+    }
 }

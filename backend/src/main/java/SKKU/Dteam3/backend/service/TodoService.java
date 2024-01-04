@@ -3,16 +3,21 @@ package SKKU.Dteam3.backend.service;
 import SKKU.Dteam3.backend.Repository.ResultRepository;
 import SKKU.Dteam3.backend.Repository.RoutineInfoRepository;
 import SKKU.Dteam3.backend.Repository.TodoRepository;
-import SKKU.Dteam3.backend.domain.Result;
-import SKKU.Dteam3.backend.domain.RoutineInfo;
-import SKKU.Dteam3.backend.domain.Todo;
-import SKKU.Dteam3.backend.domain.User;
+import SKKU.Dteam3.backend.domain.*;
 import SKKU.Dteam3.backend.dto.*;
+import SKKU.Dteam3.backend.repository.CheerRepository;
+import SKKU.Dteam3.backend.repository.PokeRepository;
+import SKKU.Dteam3.backend.repository.TownMemberRepository;
+import SKKU.Dteam3.backend.repository.TownRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +29,15 @@ public class TodoService {
     private final ResultRepository resultRepository;
 
     private final RoutineInfoRepository routineInfoRepository;
+
+    private final TownMemberRepository townMemberRepository;
+
+    private final PokeRepository pokeRepository;
+
+    private final CheerRepository cheerRepository;
+
+    @Value("${poke.max-count}")
+    private static int MAX_POKE;
 
     public AddTodoResponseDto addTodo(AddTodoRequestDto requestDto, User user) {
         Todo todo = null;
@@ -122,6 +136,39 @@ public class TodoService {
         return new DeleteTodoResponseDto(true);
     }
 
+    public PokeResponseDto poke(Long todoId, User user) {
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Todo가 없습니다.")
+        );
+        validateDate(todo);
+        int pokesNum = getPokesNum(todo, user);
+        validatePoke(todo, user, pokesNum);
+
+        Poke poke = new Poke(
+                user,
+                todo
+        );
+        pokeRepository.save(poke);
+        return new PokeResponseDto(LocalDateTime.now(), MAX_POKE - 1 - pokesNum);
+    }
+
+    public CheerResponseDto cheer(Long todoId, User user) {
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Todo가 없습니다.")
+        );
+        validateDate(todo);
+        validateCheer(todo, user);
+
+        Cheer cheer = new Cheer(
+                user,
+                todo
+        );
+        cheerRepository.save(cheer);
+        return new CheerResponseDto(LocalDateTime.now(), true);
+    }
+
+
+
     private void checkPermission(Todo todo, User user) {
         if (!user.getId().equals(todo.getUser().getId())) {
             throw new IllegalArgumentException("해당 Todo에 대한 권한이 없습니다.");
@@ -132,5 +179,50 @@ public class TodoService {
         if (!todo.getCreatedAt().toLocalDate().equals(LocalDate.now())) {
             throw new IllegalArgumentException("해당 Todo는 이미 종료됐습니다.");
         }
+    }
+
+    private void validatePoke(Todo todo, User user, int pokesNum) {
+        if (todo.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("자신의 Todo에는 찌를 수 없습니다.");
+        }
+
+        if (pokesNum == MAX_POKE)
+        {
+            throw new IllegalArgumentException("최대 찌르기 횟수에 도달했습니다.");
+        }
+
+        if(!isSameTome(todo.getUser(), user)) {
+            throw new IllegalArgumentException("해당 Todo의 주인과 같은 타운에 있지 않습니다.");
+        }
+    }
+
+    private void validateCheer(Todo todo, User user) {
+        if (todo.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("자신의 Todo에는 응원할 수 없습니다.");
+        }
+
+        Optional<Cheer> cheer = cheerRepository.findByUserId(todo.getUser().getId(), todo.getId());
+        if (cheer.isPresent()) {
+            throw new IllegalArgumentException("이미 응원했습니다.");
+        }
+    }
+
+    private int getPokesNum(Todo todo, User user) {
+        List<Poke> pokes = pokeRepository.findByUserId(todo.getUser().getId(), todo.getId());
+        return pokes.size();
+    }
+
+    private boolean isSameTome(User userA, User userB)
+    {
+        List<TownMember> townMemberA = townMemberRepository.findByUserId(userA.getId());
+        List<TownMember> townMemberB = townMemberRepository.findByUserId(userB.getId());
+        for (TownMember memberA : townMemberA) {
+            for (TownMember memberB : townMemberB) {
+                if (memberA.getTown().getId().equals(memberB.getTown().getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
