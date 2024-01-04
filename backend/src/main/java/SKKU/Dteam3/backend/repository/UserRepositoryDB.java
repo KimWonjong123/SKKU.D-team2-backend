@@ -22,6 +22,11 @@ public class UserRepositoryDB implements UserRepository {
     }
 
     @Override
+    public void update(User user) {
+        em.merge(user);
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         User user = em.find(User.class, id);
         return Optional.ofNullable(user);

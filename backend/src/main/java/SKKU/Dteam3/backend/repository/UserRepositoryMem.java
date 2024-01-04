@@ -19,6 +19,11 @@ public class UserRepositoryMem implements UserRepository {
     }
 
     @Override
+    public void update(User user) {
+        store.get(user.getId()).changeName(user.getName());
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         return Optional.ofNullable(store.get(id));
     }

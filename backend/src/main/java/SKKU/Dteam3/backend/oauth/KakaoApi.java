@@ -1,6 +1,8 @@
 package SKKU.Dteam3.backend.oauth;
 
+import SKKU.Dteam3.backend.dto.KakaoTokenInfoResponse;
 import SKKU.Dteam3.backend.dto.KakaoTokenResponse;
+import SKKU.Dteam3.backend.dto.KakaoUserInfoResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -36,6 +38,26 @@ public class KakaoApi {
                 .contentType(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToFlux(KakaoTokenResponse.class);
+
+        return response.blockFirst();
+    }
+
+    public KakaoTokenInfoResponse validateToken(String accessToken) {
+        Flux<KakaoTokenInfoResponse> response = webClient.get()
+                .uri("https://kapi.kakao.com/v1/user/access_token_info")
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .bodyToFlux(KakaoTokenInfoResponse.class);
+
+        return response.blockFirst();
+    }
+
+    public KakaoUserInfoResponse getUserInfo(String accessToken) {
+        Flux<KakaoUserInfoResponse> response = webClient.get()
+                .uri("https://kapi.kakao.com/v2/user/me")
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .bodyToFlux(KakaoUserInfoResponse.class);
 
         return response.blockFirst();
     }
