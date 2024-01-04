@@ -7,10 +7,7 @@ import SKKU.Dteam3.backend.domain.Result;
 import SKKU.Dteam3.backend.domain.RoutineInfo;
 import SKKU.Dteam3.backend.domain.Todo;
 import SKKU.Dteam3.backend.domain.User;
-import SKKU.Dteam3.backend.dto.AddTodoRequestDto;
-import SKKU.Dteam3.backend.dto.AddTodoResponseDto;
-import SKKU.Dteam3.backend.dto.CheckTodoResponseDto;
-import SKKU.Dteam3.backend.dto.UncheckTodoResponseDto;
+import SKKU.Dteam3.backend.dto.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -78,6 +75,7 @@ public class TodoService {
                 () -> new IllegalArgumentException("해당 Todo가 없습니다.")
         );
         checkPermission(todo, user);
+        validateDate(todo);
         Result result = resultRepository.finyByTodo(
                 todo
         ).orElseThrow(
@@ -92,6 +90,7 @@ public class TodoService {
                 () -> new IllegalArgumentException("해당 Todo가 없습니다.")
         );
         checkPermission(todo, user);
+        validateDate(todo);
         if (!user.getId().equals(todo.getUser().getId())) {
             throw new IllegalArgumentException("해당 Todo에 대한 권한이 없습니다.");
         }
@@ -104,10 +103,34 @@ public class TodoService {
         return new UncheckTodoResponseDto(todo.getId());
     }
 
-    private void checkPermission(Todo todo, User user)
-    {
+    public DeleteTodoResponseDto deleteTodo (Long todoId, User user) {
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Todo가 없습니다.")
+        );
+        checkPermission(todo, user);
+        validateDate(todo);
+        if (todo.getRoutineInfo() != null) {
+            routineInfoRepository.delete(todo.getRoutineInfo());
+        }
+        Result result = resultRepository.finyByTodo(
+                todo
+        ).orElseThrow(
+                () -> new IllegalArgumentException("해당 Todo에 해당하는 Result가 없습니다.")
+        );
+        resultRepository.delete(result);
+        todoRepository.delete(todo);
+        return new DeleteTodoResponseDto(true);
+    }
+
+    private void checkPermission(Todo todo, User user) {
         if (!user.getId().equals(todo.getUser().getId())) {
             throw new IllegalArgumentException("해당 Todo에 대한 권한이 없습니다.");
+        }
+    }
+
+    private void validateDate(Todo todo) {
+        if (!todo.getCreatedAt().toLocalDate().equals(LocalDate.now())) {
+            throw new IllegalArgumentException("해당 Todo는 이미 종료됐습니다.");
         }
     }
 }
