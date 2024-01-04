@@ -34,7 +34,7 @@ public class TownController {
     public String myTown(@PathVariable Long townId, Model model){
         //Town town = townRepository.findByTownId(townId).get();
         //model.addAttribute("town", town);
-        return "town/my/{townId}";
+        return "town/";
     }
 
     @PostMapping("/modify/{townId}")
