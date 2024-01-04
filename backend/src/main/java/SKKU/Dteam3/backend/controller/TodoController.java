@@ -1,11 +1,11 @@
 package SKKU.Dteam3.backend.controller;
 
-import SKKU.Dteam3.backend.Repository.UserRepository;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.AddTodoRequestDto;
 import SKKU.Dteam3.backend.dto.AddTodoResponseDto;
 import SKKU.Dteam3.backend.dto.CheckTodoResponseDto;
 import SKKU.Dteam3.backend.dto.UncheckTodoResponseDto;
+import SKKU.Dteam3.backend.repository.UserRepository;
 import SKKU.Dteam3.backend.service.TodoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

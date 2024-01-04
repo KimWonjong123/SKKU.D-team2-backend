@@ -1,6 +1,7 @@
 package SKKU.Dteam3.backend.Repository;
 
 import SKKU.Dteam3.backend.domain.User;
+import SKKU.Dteam3.backend.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,11 @@ public class UserRepositoryDB implements UserRepository {
     @Override
     public void save(User user) {
         em.persist(user);
+    }
+
+    @Override
+    public void update(User user) {
+        em.merge(user);
     }
 
     @Override

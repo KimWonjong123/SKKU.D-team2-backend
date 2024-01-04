@@ -1,4 +1,4 @@
-package SKKU.Dteam3.backend.Repository;
+package SKKU.Dteam3.backend.repository;
 
 import SKKU.Dteam3.backend.domain.User;
 
@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface UserRepository {
     void save(User user);
+
+    void update(User user);
 
     Optional<User> findById(Long id);
 

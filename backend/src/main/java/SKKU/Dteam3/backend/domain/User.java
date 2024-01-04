@@ -13,11 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @NotNull
-    private String email;
 
     @NotNull
     private String name;
@@ -26,9 +22,13 @@ public class User {
     @NotNull
     private LocalDateTime createdAt;
 
-    public User(String email, String name) {
-        this.email = email;
+    public User(Long id, String name) {
+        this.id = id;
         this.name = name;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void changeName(String name) {
+        this.name = name;
     }
 }

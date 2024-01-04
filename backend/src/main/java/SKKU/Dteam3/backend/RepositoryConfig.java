@@ -1,7 +1,7 @@
 package SKKU.Dteam3.backend;
 
-import SKKU.Dteam3.backend.Repository.UserRepository;
 import SKKU.Dteam3.backend.Repository.UserRepositoryDB;
+import SKKU.Dteam3.backend.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
