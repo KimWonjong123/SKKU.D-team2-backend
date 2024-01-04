@@ -1,14 +1,13 @@
-package SKKU.Dteam3.backend.Repository;
+package SKKU.Dteam3.backend.repository;
 
 import SKKU.Dteam3.backend.domain.User;
-import jakarta.validation.constraints.Null;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class UserRepositoryMem implements UserRepository{
+public class UserRepositoryMem implements UserRepository {
 
     private static final Map<Long, User> store = new HashMap<>();
 
@@ -20,12 +19,17 @@ public class UserRepositoryMem implements UserRepository{
     }
 
     @Override
-    public Optional<User> getById(Long id) {
+    public void update(User user) {
+        store.get(user.getId()).changeName(user.getName());
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
         return Optional.ofNullable(store.get(id));
     }
 
     @Override
-    public Optional<User> getByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         return Optional.empty();
     }
 
