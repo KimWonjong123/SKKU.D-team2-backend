@@ -5,11 +5,11 @@ import SKKU.Dteam3.backend.dto.AddTodoRequestDto;
 import SKKU.Dteam3.backend.dto.AddTodoResponseDto;
 import SKKU.Dteam3.backend.dto.CheckTodoResponseDto;
 import SKKU.Dteam3.backend.dto.UncheckTodoResponseDto;
-import SKKU.Dteam3.backend.repository.UserRepository;
 import SKKU.Dteam3.backend.service.TodoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,14 +19,10 @@ public class TodoController {
 
     private final TodoService todoService;
 
-    private final UserRepository userRepository;
-
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public AddTodoResponseDto addTodo(@Valid @RequestBody AddTodoRequestDto requestDto) {
-        User user = userRepository.findById(requestDto.getUserId()).orElseThrow(
-                () -> new IllegalArgumentException("해당 유저가 없습니다.")
-        );
+    public AddTodoResponseDto addTodo(@Valid @RequestBody AddTodoRequestDto requestDto, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
         return todoService.addTodo(
                 requestDto,
                 user

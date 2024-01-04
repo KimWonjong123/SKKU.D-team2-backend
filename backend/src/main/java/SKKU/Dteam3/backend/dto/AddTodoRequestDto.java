@@ -31,6 +31,4 @@ public class AddTodoRequestDto {
     private Boolean sat;
 
     private Boolean sun;
-
-    private Long userId;
 }
