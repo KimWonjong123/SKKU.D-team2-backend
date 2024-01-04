@@ -10,7 +10,7 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - db_data:/var/lib/mysql/
+      - todotown_data:/var/lib/mysql/
     ports:
       - "3306:3306"
 
@@ -38,6 +38,10 @@ services:
       - SPRING_JPA_SHOW_SQL=${DB_SHOW_SQL}
       - SPRING_JPA_HIBERNATE_DDL_AUTO=${DB_HIBERNATE_DDL_AUTO}
       - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=${DB_FORMAT_SQL}
+      - JWT_ACCESS_TOKEN_VALID_PERIOD=${JWT_ACCESS_TOKEN_VALID_PERIOD}
+      - JWT_REFRESH_TOKEN_VALID_PERIOD=${JWT_REFRESH_TOKEN_VALID_PERIOD}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - POKE_MAX_COUNT=${POKE_MAX_COUNT}
 
 volumes:
-  db_data: {}
+  todotown_data: {}

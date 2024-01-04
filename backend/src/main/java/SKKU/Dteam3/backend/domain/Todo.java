@@ -33,7 +33,6 @@ public class Todo {
 
     @ManyToOne
     @JoinColumn(name = "routine_info_id")
-    @NotNull
     private RoutineInfo routineInfo;
 
     public Todo(String content, String todoClass, User user, RoutineInfo routineInfo) {

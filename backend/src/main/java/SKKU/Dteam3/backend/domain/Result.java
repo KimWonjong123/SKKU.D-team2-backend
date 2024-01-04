@@ -33,4 +33,12 @@ public class Result {
         this.user = user;
         this.todo = todo;
     }
+
+    public void check() {
+        this.isDone = true;
+    }
+
+    public void uncheck() {
+        this.isDone = false;
+    }
 }

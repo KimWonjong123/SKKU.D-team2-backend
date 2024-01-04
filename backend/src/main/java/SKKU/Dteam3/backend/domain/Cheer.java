@@ -6,13 +6,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Applaud {
+public class Cheer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +31,7 @@ public class Applaud {
     @NotNull
     private Todo todo;
 
-    public Applaud(User user, Todo todo) {
+    public Cheer(User user, Todo todo) {
         this.createdAt = LocalDateTime.now();
         this.user = user;
         this.todo = todo;
