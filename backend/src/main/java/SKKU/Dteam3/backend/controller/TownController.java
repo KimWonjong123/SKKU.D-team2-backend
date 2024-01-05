@@ -2,6 +2,9 @@ package SKKU.Dteam3.backend.controller;
 
 import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
+import SKKU.Dteam3.backend.dto.AddTownRequestDto;
+import SKKU.Dteam3.backend.dto.AddTownResponseDto;
+import SKKU.Dteam3.backend.dto.ShowMyTownResponseDto;
 import SKKU.Dteam3.backend.dto.ShowMyTownsResponseDto;
 import SKKU.Dteam3.backend.repository.TownRepository;
 import SKKU.Dteam3.backend.service.TownService;
@@ -25,16 +28,28 @@ public class TownController {
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public List<ShowMyTownsResponseDto> myTowns(@Valid @RequestBody Authentication authentication){
+    public List<ShowMyTownsResponseDto> showMyTowns(@Valid @RequestBody Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.showMyTowns(user);
     }
 
-    @GetMapping("/my/{townId}")
-    public String myTown(@PathVariable Long townId, Model model){
-        //Town town = townRepository.findByTownId(townId).get();
-        //model.addAttribute("town", town);
-        return "town/";
+
+    @PostMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AddTownResponseDto addTown (@Valid @RequestBody AddTownRequestDto requestDto, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.addTown(
+                user,
+                requestDto
+        );
+    }
+    @GetMapping("/{townId}")
+    public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long id, @RequestBody Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.showMyTown(
+                user,
+                id
+        );
     }
 
     @PostMapping("/modify/{townId}")
