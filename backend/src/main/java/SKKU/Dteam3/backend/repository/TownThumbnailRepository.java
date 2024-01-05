@@ -5,6 +5,8 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
 @RequiredArgsConstructor
 public class TownThumbnailRepository {
@@ -20,4 +22,10 @@ public class TownThumbnailRepository {
     }
 
 
+    public UUID findByTownId(Long id) {
+        TownThumbnail townThumbnail = em.createQuery("select tm" +
+                " from TownThumbnail tm where tm.town.id = :townId",TownThumbnail.class)
+                .setParameter("townId",id).getSingleResult();
+        return townThumbnail.getId();
+    }
 }

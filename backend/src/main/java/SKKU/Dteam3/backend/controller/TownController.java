@@ -6,25 +6,25 @@ import SKKU.Dteam3.backend.dto.AddTownRequestDto;
 import SKKU.Dteam3.backend.dto.AddTownResponseDto;
 import SKKU.Dteam3.backend.dto.ShowMyTownResponseDto;
 import SKKU.Dteam3.backend.dto.ShowMyTownsResponseDto;
-import SKKU.Dteam3.backend.repository.TownRepository;
 import SKKU.Dteam3.backend.service.TownService;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @Controller
 @RequestMapping("/town")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 public class TownController {
 
-    private TownService townService;
-
+    private final TownService townService;
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
@@ -36,11 +36,14 @@ public class TownController {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public AddTownResponseDto addTown (@Valid @RequestBody AddTownRequestDto requestDto, Authentication authentication){
+    public AddTownResponseDto addTown (@Valid @RequestPart(value = "dto") AddTownRequestDto requestDto,
+                                       @RequestPart(value = "files") MultipartFile thumbnailFile,
+                                       @RequestPart Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.addTown(
                 user,
-                requestDto
+                requestDto,
+                thumbnailFile
         );
     }
     @GetMapping("/{townId}")
