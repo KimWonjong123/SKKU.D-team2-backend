@@ -44,11 +44,11 @@ public class TownController {
         );
     }
     @GetMapping("/{townId}")
-    public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long id, @RequestBody Authentication authentication){
+    public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long townId, @RequestBody Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.showMyTown(
                 user,
-                id
+                townId
         );
     }
 

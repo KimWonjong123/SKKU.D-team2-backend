@@ -1,9 +1,11 @@
 package SKKU.Dteam3.backend.service;
 
 import SKKU.Dteam3.backend.domain.Town;
+import SKKU.Dteam3.backend.domain.TownThumbnail;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.repository.TownRepository;
+import SKKU.Dteam3.backend.repository.TownThumbnailRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,23 +20,24 @@ import java.util.List;
 public class TownService {
 
     private final TownRepository townRepository;
+    private final TownThumbnailRepository townThumbnailRepository;
 
     public List<ShowMyTownsResponseDto> showMyTowns(User user) {
         List<Town> allTown = townRepository.findByUserId(user.getId());
-        List<ShowMyTownsResponseDto> showMyTownsResponseDtoList = new ArrayList<>();
+        List<ShowMyTownsResponseDto> towns = new ArrayList<>();
 
         for(Town town : allTown){
             ShowMyTownsResponseDto showMyTownsResponseDto = new ShowMyTownsResponseDto(town.getId(), town.getName());
-            showMyTownsResponseDtoList.add(showMyTownsResponseDto);
+            towns.add(showMyTownsResponseDto);
         }
-        return showMyTownsResponseDtoList;
+        return towns;
     }
 
     public AddTownResponseDto addTown(User user, AddTownRequestDto requestDto) {
         try {
             Town town = new Town(user, requestDto.getName(), requestDto.getDescription());
             town.createInviteLink(this.getURI(town.getId()));
-            townRepository.save(town);
+            townRepository.save(town);//TODO: 썸네일, 투두 저장하기
             return new AddTownResponseDto(town.getInviteLink(), town.getId());
         }catch(NullPointerException e){
             throw new IllegalArgumentException("타운 상세 정보가 누락되었습니다");
