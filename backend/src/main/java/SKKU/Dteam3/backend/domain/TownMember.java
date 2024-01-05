@@ -29,29 +29,6 @@ public class TownMember {
         this.town = town;
     }
 
-    public boolean recruitNewMember(User user, Town town){
-
-        if(!town.increaseMemberNum()){ //정원이 가득 찬 경우
-            //alertErrorMessage("member quota is full");
-            return false;
-        }
-        //check duplicate from repository
-        TownMember townMember = new TownMember(user, town);
-        //save to repository
-
-        return true;
-    }
-
-    public boolean removeMemberByLeader(User user, Town town){ //리스트는 팀원만 뜨게
-
-        //check exist from repository
-        if(!town.decreaseMemberNum(user)) return false;
-        else{
-            //remove from repository
-            return true;
-        }
-
-    }
 
 
 

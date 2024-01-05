@@ -31,37 +31,21 @@ public class Town {
     private LocalDateTime createdAt;
 
     @NotNull
-    private Integer memberNum = 1;
+    private int memberNum;
+
+    @NotNull
+    private String inviteLink;
 
     public Town(User leader, String name, String description) {
         this.leader = leader;
         this.name = name;
         this.description = description;
         this.createdAt = LocalDateTime.now();
+        this.memberNum = 1;
+        this.inviteLink = "null";//초대링크는 뒤에서 생성됨. 타운 아이디를 기반으로 만들어져야하기 떄문.
     }
 
-    //비지니스 로직
-
-    public boolean increaseMemberNum() {
-        this.memberNum++;
-        return true;
-    }
-
-    public boolean decreaseMemberNum(User user) {
-        if(!existMember(user, this)) return false;
-        else {
-            this.memberNum--;
-            return true;
-        }
-    }
-
-    private boolean existMember(User user, Town town) {
-        //TODO: find in TownMemberRepository
-        return true;
-    }
-
-    public void modifyTown(String name, String description){
-        this.name = name;
-        this.description = description;
+    public void createInviteLink(String inviteLink) {
+        this.inviteLink = inviteLink;
     }
 }
