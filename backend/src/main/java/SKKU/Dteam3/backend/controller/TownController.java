@@ -7,8 +7,10 @@ import SKKU.Dteam3.backend.dto.AddTownResponseDto;
 import SKKU.Dteam3.backend.dto.ShowMyTownResponseDto;
 import SKKU.Dteam3.backend.dto.ShowMyTownsResponseDto;
 import SKKU.Dteam3.backend.service.TownService;
+import SKKU.Dteam3.backend.service.TownThumbnailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +27,8 @@ import java.util.List;
 public class TownController {
 
     private final TownService townService;
+
+    private final TownThumbnailService townThumbnailService;
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
@@ -54,6 +58,13 @@ public class TownController {
                 townId
         );
     }
+
+    @GetMapping("/{townId}/image")
+    public Resource getTownThumbnail(@Valid @PathVariable Long townId, @RequestBody Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townThumbnailService.downloadTownThumbnail(townId);
+    }
+
 
     @PostMapping("/modify/{townId}")
     public String modifyTown(@PathVariable Long townId, @ModelAttribute Town town){
