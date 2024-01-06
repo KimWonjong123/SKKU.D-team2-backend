@@ -11,8 +11,6 @@ public class ShowMyTownResponseDto {
 
     private String name;
 
-    private String thumbnailName;
-
     private String description;
 
     private int memberNum;

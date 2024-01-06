@@ -23,6 +23,8 @@ public class TownService {
 
     private final TownThumbnailService townThumbnailService;
 
+    private final TodoService todoService;
+
     public List<ShowMyTownsResponseDto> showMyTowns(User user) {
         List<Town> allTown = townRepository.findByUserId(user.getId());
         List<ShowMyTownsResponseDto> towns = new ArrayList<>();
@@ -39,12 +41,10 @@ public class TownService {
             Town town = new Town(user, requestDto.getName(), requestDto.getDescription());
             town.createInviteLink(this.getURI(town.getId()));
             townThumbnailService.addTownThumbnail(thumbnailFile, town);
-            townRepository.save(town);//TODO: 썸네일, 투두 저장하기
+            townRepository.save(town);//TODO: 투두 저장하기
             return new AddTownResponseDto(town.getInviteLink(), town.getId());
         }catch(NullPointerException e){
             throw new IllegalArgumentException("Town 상세 정보가 누락되었습니다.");
-        } catch (IOException e) {
-            throw new RuntimeException("썸네일 업로드에 실패하였습니다.");
         }
 
     }
@@ -60,7 +60,6 @@ public class TownService {
         isMemberOfTown(user,town);
         return new ShowMyTownResponseDto(
                 town.getName(),
-                "thumbnailName",//TODO: 썸내일 작업하기
                 town.getDescription(),
                 town.getMemberNum(),
                 town.getLeader().getName(),
