@@ -41,7 +41,7 @@ public class TownController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public AddTownResponseDto addTown (@Valid @RequestPart(value = "dto") AddTownRequestDto requestDto,
-                                       @RequestPart(value = "files") MultipartFile thumbnailFile,
+                                       @RequestPart(value = "file") MultipartFile thumbnailFile,
                                        @RequestPart Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.addTown(
