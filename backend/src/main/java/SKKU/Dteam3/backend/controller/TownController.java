@@ -40,6 +40,7 @@ public class TownController {
         );
     }
     @GetMapping("/{townId}")
+    @ResponseStatus(HttpStatus.OK)
     public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long townId, @RequestBody Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.showMyTown(
@@ -49,18 +50,21 @@ public class TownController {
     }
 
     @GetMapping("/{townId}/invitelink")
+    @ResponseStatus(HttpStatus.OK)
     public String getInviteLink(@Valid @PathVariable Long townId, @RequestBody Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.getInviteLinkHash(townId, user);
     }
 
     @PostMapping("/{townId}/invitelink")
+    @ResponseStatus(HttpStatus.CREATED)
     public String updateInviteLink(@Valid @PathVariable Long townId, @RequestBody Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.updateInviteLinkHash(townId, user);
     }
 
     @GetMapping("/{invitelink}")
+    @ResponseStatus(HttpStatus.OK)
     public inviteTownResponseDto getInvitedTownInfo(@Valid @PathVariable(value = "invitelink")  String inviteLink, @RequestBody Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.findTownByInviteLink(inviteLink, user);

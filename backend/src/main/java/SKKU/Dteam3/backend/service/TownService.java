@@ -83,7 +83,9 @@ public class TownService {
                 () -> new IllegalArgumentException("유효하지 않은 초대링크입니다."));
         isNotMemberOfTown(user,town);
         return new inviteTownResponseDto(
-                town
+                town.getId(),
+                town.getLeader().getName(),
+                town.getName()
         );
     }
 

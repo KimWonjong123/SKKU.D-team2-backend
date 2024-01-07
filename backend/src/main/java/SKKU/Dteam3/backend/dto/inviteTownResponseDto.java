@@ -1,7 +1,13 @@
 package SKKU.Dteam3.backend.dto;
 
 import SKKU.Dteam3.backend.domain.Town;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class inviteTownResponseDto {
 
     private Long townId;
@@ -10,9 +16,4 @@ public class inviteTownResponseDto {
 
     private String name;
 
-    public inviteTownResponseDto(Town town) {
-        this.townId = town.getId();
-        this.LeaderName = town.getLeader().getName();
-        this.name = town.getName();
-    }
 }
