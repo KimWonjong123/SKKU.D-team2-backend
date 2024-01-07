@@ -11,5 +11,5 @@ public class AddTownResponseDto {
 
     private String inviteLink;
 
-    private Long id;
+    private Long townId;
 }
