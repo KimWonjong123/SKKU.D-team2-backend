@@ -44,12 +44,24 @@ public class TownController {
         );
     }
     @GetMapping("/{townId}")
-    public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long id, @RequestBody Authentication authentication){
+    public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long townId, @RequestBody Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.showMyTown(
                 user,
-                id
+                townId
         );
+    }
+
+    @GetMapping("/{townId}/invitelink")
+    public String getInviteLink(@Valid @PathVariable Long townId, @RequestBody Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.getInviteLink(townId, user);
+    }
+
+    @PostMapping("/{townId}/invitelink")
+    public String updateInviteLink(@Valid @PathVariable Long townId, @RequestBody Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.updateInviteLink(townId, user);
     }
 
     @PostMapping("/modify/{townId}")

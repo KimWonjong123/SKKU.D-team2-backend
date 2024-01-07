@@ -9,7 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
@@ -42,10 +46,6 @@ public class TownService {
 
     }
 
-    private String getURI(Long id) {
-        return "AA"; //TODO: invite link 어떻게 설정 할 건지 결정.
-    }
-
     public ShowMyTownResponseDto showMyTown(User user, Long townId) {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
@@ -61,9 +61,46 @@ public class TownService {
         );
     }
 
+
+    public String getInviteLink(Long townId, User user) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isMemberOfTown(user,town);
+        return town.getInviteLink();
+    }
+
+    public String updateInviteLink(Long townId, User user) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isMemberOfTown(user,town);
+        town.createInviteLink(this.getURI(town.getId()));
+        return town.getInviteLink();
+    }
+
     private void isMemberOfTown(User user, Town town) {
         if(townRepository.findByUserId(user.getId()).isEmpty()){
             throw new IllegalArgumentException("해당 Town의 Member가 아닙니다.");
         }
     }
+    private String getURI(Long id) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update((id+ LocalDateTime.now().toString()).getBytes());
+            return byteToHex(md.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("초대 링크 생성에 실패하였습니다.");
+        }
+    }
+
+    private String byteToHex(byte[] digest) {
+        StringBuilder builder = new StringBuilder();
+        for (byte b : digest) {
+            builder.append(String.format("%02x", b));
+        }
+        return builder.toString();
+    }
+
+
 }
