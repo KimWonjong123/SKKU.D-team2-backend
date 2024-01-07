@@ -2,11 +2,7 @@ package SKKU.Dteam3.backend.controller;
 
 import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
-import SKKU.Dteam3.backend.dto.AddTownRequestDto;
-import SKKU.Dteam3.backend.dto.AddTownResponseDto;
-import SKKU.Dteam3.backend.dto.ShowMyTownResponseDto;
-import SKKU.Dteam3.backend.dto.ShowMyTownsResponseDto;
-import SKKU.Dteam3.backend.repository.TownRepository;
+import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.service.TownService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -55,13 +51,19 @@ public class TownController {
     @GetMapping("/{townId}/invitelink")
     public String getInviteLink(@Valid @PathVariable Long townId, @RequestBody Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        return townService.getInviteLink(townId, user);
+        return townService.getInviteLinkHash(townId, user);
     }
 
     @PostMapping("/{townId}/invitelink")
     public String updateInviteLink(@Valid @PathVariable Long townId, @RequestBody Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        return townService.updateInviteLink(townId, user);
+        return townService.updateInviteLinkHash(townId, user);
+    }
+
+    @GetMapping("/{invitelink}")
+    public inviteTownResponseDto getInvitedTownInfo(@Valid @PathVariable(value = "invitelink")  String inviteLink, @RequestBody Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.findTownByInviteLink(inviteLink, user);
     }
 
     @PostMapping("/modify/{townId}")

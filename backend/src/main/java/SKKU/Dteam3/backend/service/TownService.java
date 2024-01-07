@@ -13,7 +13,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
@@ -39,7 +38,7 @@ public class TownService {
             Town town = new Town(user, requestDto.getName(), requestDto.getDescription());
             town.createInviteLink(this.getURI(town.getId()));
             townRepository.save(town);
-            return new AddTownResponseDto(town.getInviteLink(), town.getId());
+            return new AddTownResponseDto(town.getInviteLinkHash(), town.getId());
         }catch(NullPointerException e){
             throw new IllegalArgumentException("타운 상세 정보가 누락되었습니다");
         }
@@ -62,21 +61,30 @@ public class TownService {
     }
 
 
-    public String getInviteLink(Long townId, User user) {
+    public String getInviteLinkHash(Long townId, User user) {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
         isMemberOfTown(user,town);
-        return town.getInviteLink();
+        return town.getInviteLinkHash();
     }
 
-    public String updateInviteLink(Long townId, User user) {
+    public String updateInviteLinkHash(Long townId, User user) {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
         isMemberOfTown(user,town);
         town.createInviteLink(this.getURI(town.getId()));
-        return town.getInviteLink();
+        return town.getInviteLinkHash();
+    }
+
+    public inviteTownResponseDto findTownByInviteLink(String inviteLink, User user) {
+        Town town = townRepository.findByInviteLink(inviteLink).orElseThrow(
+                () -> new IllegalArgumentException("유효하지 않은 초대링크입니다."));
+        isNotMemberOfTown(user,town);
+        return new inviteTownResponseDto(
+                town
+        );
     }
 
     private void isMemberOfTown(User user, Town town) {
@@ -84,6 +92,13 @@ public class TownService {
             throw new IllegalArgumentException("해당 Town의 Member가 아닙니다.");
         }
     }
+
+    private void isNotMemberOfTown(User user, Town town) {
+        if(!townRepository.findByUserId(user.getId()).isEmpty()){
+            throw new IllegalArgumentException("이미 Town의 Member입니다.");
+        }
+    }
+
     private String getURI(Long id) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -101,6 +116,5 @@ public class TownService {
         }
         return builder.toString();
     }
-
 
 }

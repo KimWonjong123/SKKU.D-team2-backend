@@ -51,4 +51,15 @@ public class TownRepositoryDB implements TownRepository{
     public List<Town> findAll() {
         return em.createQuery("select m from Town m", Town.class).getResultList();
     }
+
+    @Override
+    public Optional<Town> findByInviteLink(String inviteLink) {
+        try {
+            Town town = em.createQuery("select m from Town m where m.inviteLinkHash = :invite", Town.class)
+                    .setParameter("invite",inviteLink).getSingleResult();
+            return Optional.of(town);
+        } catch (Exception e){
+            return Optional.empty();
+        }
+    }
 }
