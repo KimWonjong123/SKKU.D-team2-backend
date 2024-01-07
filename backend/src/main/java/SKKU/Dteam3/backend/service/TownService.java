@@ -65,7 +65,7 @@ public class TownService {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
-        isMemberOfTown(user,town);
+        isLeaderOfTown(user,town);
         return town.getInviteLinkHash();
     }
 
@@ -73,7 +73,7 @@ public class TownService {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
-        isMemberOfTown(user,town);
+        isLeaderOfTown(user,town);
         town.createInviteLink(this.getURI(town.getId()));
         return town.getInviteLinkHash();
     }
@@ -87,6 +87,14 @@ public class TownService {
                 town.getLeader().getName(),
                 town.getName()
         );
+    }
+
+
+
+    private void isLeaderOfTown(User user, Town town) {
+        if(!town.getLeader().getId().equals(user.getId())){
+            throw new IllegalArgumentException("타운의 리더가 아닙니다.");
+        }
     }
 
     private void isMemberOfTown(User user, Town town) {
