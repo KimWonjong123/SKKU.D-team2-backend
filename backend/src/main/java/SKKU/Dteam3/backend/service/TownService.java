@@ -14,6 +14,8 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -98,13 +100,13 @@ public class TownService {
     }
 
     private void isMemberOfTown(User user, Town town) {
-        if(townRepository.findByUserId(user.getId()).isEmpty()){
+        if(townRepository.findByUserId(user.getId()).stream().filter(o -> o.getId().equals(town.getId())).toList().isEmpty()){
             throw new IllegalArgumentException("해당 Town의 Member가 아닙니다.");
         }
     }
 
     private void isNotMemberOfTown(User user, Town town) {
-        if(!townRepository.findByUserId(user.getId()).isEmpty()){
+        if(!townRepository.findByUserId(user.getId()).stream().filter(o -> o.getId().equals(town.getId())).toList().isEmpty()){
             throw new IllegalArgumentException("이미 Town의 Member입니다.");
         }
     }
