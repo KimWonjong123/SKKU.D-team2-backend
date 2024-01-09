@@ -3,8 +3,8 @@ WORKDIR /gradle
 COPY gradle ./gradle
 COPY gradlew build.gradle settings.gradle ./
 COPY src ./src
-RUN ./gradlew clean
-RUN ./gradlew bootJar
+RUN chmod +x gradlew
+RUN ./gradlew build -x test
 
 FROM openjdk:17-jdk
 WORKDIR /app
