@@ -38,7 +38,7 @@ public class ResultRepository {
                 .setParameter("user", user).getResultList();
     }
 
-    public Optional<Result> finyByTodo (Todo todo) {
+    public Optional<Result> findByTodo(Todo todo) {
         try {
             Result result = em.createQuery("select m from Result m where m.todo = :todo", Result.class)
                     .setParameter("todo", todo).getSingleResult();
