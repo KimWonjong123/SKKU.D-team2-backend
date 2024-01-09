@@ -15,8 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -118,6 +122,23 @@ public class UserService {
     public AchieveResponseDto getMyAchieve(User user, LocalDate date) {
         return new AchieveResponseDto(date, convertAchieve(resultRepository.calculateAchievementRateByUser(user, date.atStartOfDay())));
     }
+
+    public ListDto<AchieveResponseDto> getCalendar(Long userId, User user, LocalDate date) {
+        User userFound = validateUserId(userId);
+        if (!isSameTome(user, userFound)) {
+            throw new IllegalArgumentException("타운 멤버가 아닙니다.");
+        }
+        LocalDateTime start = date.plusDays(-date.getDayOfMonth() + 1).atStartOfDay();
+        LocalDateTime end = date.plusDays(-date.getDayOfMonth() + 1).plusMonths(1).atStartOfDay();
+        return ListDto.createAchieves(resultRepository.calculateMonthAchievementRateByUser(user, start, end).stream().toList());
+    }
+
+    public ListDto<AchieveResponseDto> getMyCalendar(User user, LocalDate date) {
+        LocalDateTime start = date.plusDays(-date.getDayOfMonth() + 1).atStartOfDay();
+        LocalDateTime end = date.plusDays(-date.getDayOfMonth() + 1).plusMonths(1).atStartOfDay();
+        return ListDto.createAchieves(resultRepository.calculateMonthAchievementRateByUser(user, start, end).stream().toList());
+    }
+
 
     private User validateUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);

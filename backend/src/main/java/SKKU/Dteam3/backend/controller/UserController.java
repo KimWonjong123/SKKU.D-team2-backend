@@ -65,7 +65,7 @@ public class UserController {
                 return userService.getTown(userId, (User) authentication.getPrincipal());
         }
 
-        @GetMapping("{userId}/achieve")
+        @GetMapping("/{userId}/achieve")
         @ResponseStatus(HttpStatus.OK)
         public AchieveResponseDto getAchieve(@PathVariable Long userId,
                                              Authentication authentication,
@@ -77,13 +77,35 @@ public class UserController {
                 );
         }
 
-        @GetMapping("me/achieve")
+        @GetMapping("/me/achieve")
         @ResponseStatus(HttpStatus.OK)
         public AchieveResponseDto getAchieve(Authentication authentication,
                                              @RequestParam(required = false) LocalDate date) {
                 User user = (User) authentication.getPrincipal();
                 return userService.getMyAchieve(
                         user,
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
+        }
+
+        @GetMapping("/{userId}/calendar")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<AchieveResponseDto> getCalendar(@PathVariable Long userId,
+                                                       Authentication authentication,
+                                                       @RequestParam LocalDate date) {
+                return userService.getCalendar(
+                        userId,
+                        (User) authentication.getPrincipal(),
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
+        }
+
+        @GetMapping("/me/calendar")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<AchieveResponseDto> getCalendar(Authentication authentication,
+                                                       @RequestParam LocalDate date) {
+                return userService.getMyCalendar(
+                        (User) authentication.getPrincipal(),
                         Objects.requireNonNullElseGet(date, LocalDate::now)
                 );
         }
