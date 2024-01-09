@@ -62,24 +62,19 @@ public class UserController {
         @ResponseStatus(HttpStatus.OK)
         public ListDto<TownResponseDto> getTown(@PathVariable Long userId,
                                                 Authentication authentication) {
-                List<Town> towns = userService.getTown(
-                        userId,
-                        (User) authentication.getPrincipal()
-                );
-                return ListDto.createTowns(towns);
+                return userService.getTown(userId, (User) authentication.getPrincipal());
         }
 
         @GetMapping("{userId}/achieve")
         @ResponseStatus(HttpStatus.OK)
         public AchieveResponseDto getAchieve(@PathVariable Long userId,
                                              Authentication authentication,
-                                             @RequestParam LocalDate date) {
-                Integer achieve = userService.getAchieve(
+                                             @RequestParam(required = false) LocalDate date) {
+                return userService.getAchieve(
                         userId,
                         (User) authentication.getPrincipal(),
-                        date
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
                 );
-                return new AchieveResponseDto(date, achieve);
         }
 
         @GetMapping("me/achieve")
@@ -87,10 +82,9 @@ public class UserController {
         public AchieveResponseDto getAchieve(Authentication authentication,
                                              @RequestParam(required = false) LocalDate date) {
                 User user = (User) authentication.getPrincipal();
-                Integer achieve = userService.getMyAchieve(
+                return userService.getMyAchieve(
                         user,
                         Objects.requireNonNullElseGet(date, LocalDate::now)
                 );
-                return new AchieveResponseDto(Objects.requireNonNullElseGet(date, LocalDate::now), achieve);
         }
 }

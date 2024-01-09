@@ -99,24 +99,24 @@ public class UserService {
         return new MemoResponseDto(memo.getDate(), memo.getContent(), memo.getPosition(), memo.getFont(), memo.getFontSize());
     }
 
-    public List<Town> getTown(Long userId, User user) {
+    public ListDto<TownResponseDto> getTown(Long userId, User user) {
         User userFound = validateUserId(userId);
         if (!isSameTome(user, userFound)) {
             throw new IllegalArgumentException("타운 멤버가 아닙니다.");
         }
-        return townRepository.findByUserId(userId);
+        return ListDto.createTowns(townRepository.findByUserId(userId));
     }
 
-    public Integer getAchieve(Long userId, User user, LocalDate date) {
+    public AchieveResponseDto getAchieve(Long userId, User user, LocalDate date) {
         User userFound = validateUserId(userId);
         if (!isSameTome(user, userFound)) {
             throw new IllegalArgumentException("타운 멤버가 아닙니다.");
         }
-        return convertAchieve(resultRepository.calculateAchievementRateByUser(userFound, date.atStartOfDay()));
+        return new AchieveResponseDto(date, convertAchieve(resultRepository.calculateAchievementRateByUser(userFound, date.atStartOfDay())));
     }
 
-    public Integer getMyAchieve(User user, LocalDate date) {
-        return convertAchieve(resultRepository.calculateAchievementRateByUser(user, date.atStartOfDay()));
+    public AchieveResponseDto getMyAchieve(User user, LocalDate date) {
+        return new AchieveResponseDto(date, convertAchieve(resultRepository.calculateAchievementRateByUser(user, date.atStartOfDay())));
     }
 
     private User validateUserId(Long userId) {
