@@ -43,4 +43,11 @@ public class TownMemberRepository {
                 .getResultList();
     }
 
+    public Long countByTwoUserId(Long userIdA, Long userIdB) {
+        return em.createQuery("select count(m) from TownMember m where m.user.id = :userIdA and m.town.id in (select m.town.id from TownMember m where m.user.id = :userIdB)", Long.class)
+                .setParameter("userIdA", userIdA)
+                .setParameter("userIdB", userIdB)
+                .getSingleResult();
+    }
+
 }

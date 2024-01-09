@@ -214,15 +214,6 @@ public class TodoService {
 
     private boolean isSameTome(User userA, User userB)
     {
-        List<TownMember> townMemberA = townMemberRepository.findByUserId(userA.getId());
-        List<TownMember> townMemberB = townMemberRepository.findByUserId(userB.getId());
-        for (TownMember memberA : townMemberA) {
-            for (TownMember memberB : townMemberB) {
-                if (memberA.getTown().getId().equals(memberB.getTown().getId())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return townMemberRepository.countByTwoUserId(userA.getId(), userB.getId()) > 0;
     }
 }
