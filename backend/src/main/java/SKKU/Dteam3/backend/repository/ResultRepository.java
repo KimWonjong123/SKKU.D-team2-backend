@@ -63,19 +63,18 @@ public class ResultRepository {
     }
 
     public List<AchievementRate> calculateMonthAchievementRateByUser(User user, LocalDateTime start, LocalDateTime end) {
-        Query nativeQuery = em.createNativeQuery(
-                "SELECT DATE(CONVERT_TZ(t.created_at, '+00:00', '+09:00')) AS converted_date, " +
-                        "SUM(CASE WHEN r.is_done = 1 THEN 1 ELSE 0 END) * 1.0 / COUNT(*) AS achieved_rate " +
-                        "FROM result r JOIN todo t ON r.todo_id = t.id " +
-                        "WHERE r.user_id = :userId " +
-                        "GROUP BY converted_date " +
-                        "ORDER BY converted_date");
-//        nativeQuery.setParameter("startDate", start);
-//        nativeQuery.setParameter("endDate", end); // TODO: fix date filtering
-        nativeQuery.setParameter("userId", user.getId());
-        List<Object[]> resultList2 = nativeQuery.getResultList();
-        return resultList2.stream().map(objects -> new AchievementRate(
+        Query query = em.createQuery("select(function('DATE', function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00')), " +
+                "sum(case when r.isDone = true then 1 else 0 end) * 1.0 / count(r)) " +
+                "from Result r join Todo t on t.id = r.todo.id " +
+                "where r.user = :user " +
+                "group by function('DATE', function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00')) " +
+                "order by function('DATE', function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00'))");
+        query.setParameter("user", user);
+//        query.setParameter("startDate", start);
+//        query.setParameter("endDate", end); // TODO: fix date filtering
+        List<Object[]> resultList = query.getResultList();
+        return resultList.stream().map(objects -> new AchievementRate(
                 ((Date) objects[0]).toLocalDate(),
-                (int) Math.floor(((BigDecimal) objects[1]).floatValue() * 5) * 20)).toList();
+                (int) Math.floor(((float) objects[1]) * 5) * 20)).toList();
     }
 }
