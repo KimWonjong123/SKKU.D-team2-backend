@@ -2,10 +2,7 @@ package SKKU.Dteam3.backend.controller;
 
 import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
-import SKKU.Dteam3.backend.dto.ListDto;
-import SKKU.Dteam3.backend.dto.MemoResponseDto;
-import SKKU.Dteam3.backend.dto.TownResponseDto;
-import SKKU.Dteam3.backend.dto.UpdateMemoRequestDto;
+import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.service.UserService;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -70,5 +67,30 @@ public class UserController {
                         (User) authentication.getPrincipal()
                 );
                 return ListDto.createTowns(towns);
+        }
+
+        @GetMapping("{userId}/achieve")
+        @ResponseStatus(HttpStatus.OK)
+        public AchieveResponseDto getAchieve(@PathVariable Long userId,
+                                             Authentication authentication,
+                                             @RequestParam LocalDate date) {
+                Integer achieve = userService.getAchieve(
+                        userId,
+                        (User) authentication.getPrincipal(),
+                        date
+                );
+                return new AchieveResponseDto(date, achieve);
+        }
+
+        @GetMapping("me/achieve")
+        @ResponseStatus(HttpStatus.OK)
+        public AchieveResponseDto getAchieve(Authentication authentication,
+                                             @RequestParam(required = false) LocalDate date) {
+                User user = (User) authentication.getPrincipal();
+                Integer achieve = userService.getMyAchieve(
+                        user,
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
+                return new AchieveResponseDto(Objects.requireNonNullElseGet(date, LocalDate::now), achieve);
         }
 }

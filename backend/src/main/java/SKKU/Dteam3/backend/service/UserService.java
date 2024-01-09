@@ -7,6 +7,7 @@ import SKKU.Dteam3.backend.repository.MemoRepository;
 import SKKU.Dteam3.backend.repository.TownMemberRepository;
 import SKKU.Dteam3.backend.repository.TownRepository;
 import SKKU.Dteam3.backend.repository.UserRepository;
+import SKKU.Dteam3.backend.repository.ResultRepository;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,8 @@ public class UserService {
 
     private final TownRepository townRepository;
 
+    private final ResultRepository resultRepository;
+
     private final KakaoApi kakaoApi;
 
     public void saveOrUpdate(KakaoTokenResponse kakaoTokenResponse) {
@@ -51,11 +54,8 @@ public class UserService {
     }
 
     public MemoResponseDto getMemo(Long userId, User user, LocalDate date) {
-    	Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 유저입니다.");
-        }
-        if (!isSameTome(user, userOptional.get())) {
+        User userFound = validateUserId(userId);
+        if (!isSameTome(user, userFound)) {
             throw new IllegalArgumentException("타운 멤버가 아닙니다.");
         }
         Memo memo;
@@ -63,7 +63,7 @@ public class UserService {
             memo = memoRepository.findByIdAndDate(userId, date);
         } catch (NoResultException e) {
             if (date.equals(LocalDate.now())) {
-                memo = new Memo(userOptional.get(), "", "", "", 0);
+                memo = new Memo(userFound, "", "", "", 0);
                 memoRepository.save(memo);
                 return new MemoResponseDto(memo.getDate(), memo.getContent(), memo.getPosition(), memo.getFont(), memo.getFontSize());
             }
@@ -100,15 +100,37 @@ public class UserService {
     }
 
     public List<Town> getTown(Long userId, User user) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 유저입니다.");
-        }
-        if (!isSameTome(user, userOptional.get())) {
+        User userFound = validateUserId(userId);
+        if (!isSameTome(user, userFound)) {
             throw new IllegalArgumentException("타운 멤버가 아닙니다.");
         }
         return townRepository.findByUserId(userId);
     }
+
+    public Integer getAchieve(Long userId, User user, LocalDate date) {
+        User userFound = validateUserId(userId);
+        if (!isSameTome(user, userFound)) {
+            throw new IllegalArgumentException("타운 멤버가 아닙니다.");
+        }
+        return convertAchieve(resultRepository.calculateAchievementRateByUser(userFound, date.atStartOfDay()));
+    }
+
+    public Integer getMyAchieve(User user, LocalDate date) {
+        return convertAchieve(resultRepository.calculateAchievementRateByUser(user, date.atStartOfDay()));
+    }
+
+    private User validateUserId(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 유저입니다.");
+        }
+        return userOptional.get();
+    }
+
+    private Integer convertAchieve(Float achieve){
+        return (int) Math.floor(achieve * 5) * 20;
+    }
+
 
     private boolean isSameTome(User userA, User userB)
     {

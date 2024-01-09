@@ -1,4 +1,4 @@
-package SKKU.Dteam3.backend.Repository;
+package SKKU.Dteam3.backend.repository;
 
 import SKKU.Dteam3.backend.domain.Result;
 import SKKU.Dteam3.backend.domain.Todo;
@@ -7,6 +7,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,5 +47,13 @@ public class ResultRepository {
         } catch (Exception e) {
             return Optional.empty();
         }
+    }
+
+    public Float calculateAchievementRateByUser(User user, LocalDateTime date) {
+        return em.createQuery("select (sum(case when r.isDone = true then 1 else 0 end) * 1.0) / count(r) from Result r join Todo t on t.id = r.todo.id where r.user = :user and t.createdAt >= :date and t.createdAt < :tomorrow", Float.class)
+                .setParameter("user", user)
+                .setParameter("date", date)
+                .setParameter("tomorrow", date.plusDays(1))
+                .getSingleResult();
     }
 }
