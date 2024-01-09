@@ -11,6 +11,7 @@ import SKKU.Dteam3.backend.service.TownService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -20,15 +21,15 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/town")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 public class TownController {
 
-    private TownService townService;
+    private final TownService townService;
 
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public List<ShowMyTownsResponseDto> showMyTowns(@Valid @RequestBody Authentication authentication){
+    public List<ShowMyTownsResponseDto> showMyTowns(@Valid Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.showMyTowns(user);
     }

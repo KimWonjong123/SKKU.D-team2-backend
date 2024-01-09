@@ -1,13 +1,11 @@
 package SKKU.Dteam3.backend.service;
 
 import SKKU.Dteam3.backend.domain.*;
-import SKKU.Dteam3.backend.dto.KakaoTokenResponse;
-import SKKU.Dteam3.backend.dto.KakaoUserInfoResponse;
-import SKKU.Dteam3.backend.dto.MemoResponseDto;
-import SKKU.Dteam3.backend.dto.UpdateMemoRequestDto;
+import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.oauth.KakaoApi;
 import SKKU.Dteam3.backend.repository.MemoRepository;
 import SKKU.Dteam3.backend.repository.TownMemberRepository;
+import SKKU.Dteam3.backend.repository.TownRepository;
 import SKKU.Dteam3.backend.repository.UserRepository;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
@@ -16,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +28,8 @@ public class UserService {
     private final MemoRepository memoRepository;
 
     private final TownMemberRepository townMemberRepository;
+
+    private final TownRepository townRepository;
 
     private final KakaoApi kakaoApi;
 
@@ -96,6 +97,17 @@ public class UserService {
             return new MemoResponseDto(memo.getDate(), memo.getContent(), memo.getPosition(), memo.getFont(), memo.getFontSize());
         }
         return new MemoResponseDto(memo.getDate(), memo.getContent(), memo.getPosition(), memo.getFont(), memo.getFontSize());
+    }
+
+    public List<Town> getTown(Long userId, User user) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 유저입니다.");
+        }
+        if (!isSameTome(user, userOptional.get())) {
+            throw new IllegalArgumentException("타운 멤버가 아닙니다.");
+        }
+        return townRepository.findByUserId(userId);
     }
 
     private boolean isSameTome(User userA, User userB)

@@ -1,6 +1,7 @@
 package SKKU.Dteam3.backend.repository;
 
 import SKKU.Dteam3.backend.domain.Town;
+import SKKU.Dteam3.backend.domain.TownMember;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -32,7 +33,7 @@ public class TownRepositoryDB implements TownRepository{
 
     @Override
     public List<Town> findByUserId(Long id) {
-        return em.createQuery("select m from Town m join TownMember t where t.user.id = :userId", Town.class)
+        return em.createQuery("select m from Town m join TownMember t on m.id = t.town.id where t.user.id = :userId", Town.class)
                 .setParameter("userId", id).getResultList();
     }
 

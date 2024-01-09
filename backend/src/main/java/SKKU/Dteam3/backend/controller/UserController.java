@@ -1,7 +1,10 @@
 package SKKU.Dteam3.backend.controller;
 
+import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
+import SKKU.Dteam3.backend.dto.ListDto;
 import SKKU.Dteam3.backend.dto.MemoResponseDto;
+import SKKU.Dteam3.backend.dto.TownResponseDto;
 import SKKU.Dteam3.backend.dto.UpdateMemoRequestDto;
 import SKKU.Dteam3.backend.service.UserService;
 import lombok.NoArgsConstructor;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -55,5 +59,16 @@ public class UserController {
                                           @RequestBody UpdateMemoRequestDto requestDto) {
                 User user = (User) authentication.getPrincipal();
                 return userService.updateMemo(user, requestDto);
+        }
+
+        @GetMapping("/{userId}/town")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<TownResponseDto> getTown(@PathVariable Long userId,
+                                                Authentication authentication) {
+                List<Town> towns = userService.getTown(
+                        userId,
+                        (User) authentication.getPrincipal()
+                );
+                return ListDto.createTowns(towns);
         }
 }
