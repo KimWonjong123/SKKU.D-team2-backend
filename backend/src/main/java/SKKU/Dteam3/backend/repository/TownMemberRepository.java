@@ -43,4 +43,5 @@ public class TownMemberRepository {
                 .getResultList();
     }
 
+
 }

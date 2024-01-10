@@ -1,6 +1,6 @@
 package SKKU.Dteam3.backend;
 
-import SKKU.Dteam3.backend.Repository.UserRepositoryDB;
+import SKKU.Dteam3.backend.repository.UserRepositoryDB;
 import SKKU.Dteam3.backend.repository.UserRepository;
 import SKKU.Dteam3.backend.repository.TownRepository;
 import SKKU.Dteam3.backend.repository.TownRepositoryDB;

@@ -6,11 +6,11 @@ import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.repository.TownRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 @Service
@@ -23,7 +23,7 @@ public class TownService {
 
     private final TownThumbnailService townThumbnailService;
 
-    private final TodoService todoService;
+    private final TownMemberService townMemberService;
 
     public List<ShowMyTownsResponseDto> showMyTowns(User user) {
         List<Town> allTown = townRepository.findByUserId(user.getId());
@@ -37,15 +37,12 @@ public class TownService {
     }
 
     public AddTownResponseDto addTown(User user, AddTownRequestDto requestDto, MultipartFile thumbnailFile) {
-        try {
-            Town town = new Town(user, requestDto.getName(), requestDto.getDescription());
-            town.createInviteLink(this.getURI(town.getId()));
-            townThumbnailService.addTownThumbnail(thumbnailFile, town);
-            townRepository.save(town);//TODO: 투두 저장하기
-            return new AddTownResponseDto(town.getInviteLink(), town.getId());
-        }catch(NullPointerException e){
-            throw new IllegalArgumentException("Town 상세 정보가 누락되었습니다.");
-        }
+        Town town = new Town(user, requestDto.getName(), requestDto.getDescription());
+        town.createInviteLink(this.getURI(town.getId()));
+        townRepository.save(town);//TODO: 투두 저장하기
+        townThumbnailService.addTownThumbnail(thumbnailFile, town);
+        townMemberService.saveMemberShip(user,town);
+        return new AddTownResponseDto(town.getInviteLink(), town.getId());
 
     }
 
@@ -67,9 +64,19 @@ public class TownService {
         );
     }
 
+    public Resource downloadTownThumbnail(Long townId, User user) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        //isMemberOfTown(user,town);
+        return townThumbnailService.downloadTownThumbnail(townId);
+    }
+
     private void isMemberOfTown(User user, Town town) {
         if(townRepository.findByUserId(user.getId()).isEmpty()){
             throw new IllegalArgumentException("해당 Town의 Member가 아닙니다.");
         }
     }
+
+
 }

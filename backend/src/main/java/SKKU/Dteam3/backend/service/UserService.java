@@ -32,7 +32,7 @@ public class UserService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (user.getName().equals(kakaoProfile.getNickname())) {
-                user.changeName(kakaoAccount.getName());
+                user.changeName(kakaoAccount.getProfile().getNickname());
                 userRepository.update(user);
             }
         } else {
