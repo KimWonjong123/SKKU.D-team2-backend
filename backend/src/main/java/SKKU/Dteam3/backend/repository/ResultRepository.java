@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,15 +65,15 @@ public class ResultRepository {
     }
 
     public List<AchievementRate> calculateMonthAchievementRateByUser(User user, LocalDateTime start, LocalDateTime end) {
-        Query query = em.createQuery("select(function('DATE', function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00')), " +
+        Query query = em.createQuery("select(date(function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00')), " +
                 "sum(case when r.isDone = true then 1 else 0 end) * 1.0 / count(r)) " +
                 "from Result r join Todo t on t.id = r.todo.id " +
-                "where r.user = :user " +
-                "group by function('DATE', function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00')) " +
-                "order by function('DATE', function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00'))");
+                "where r.user = :user and t.createdAt between :startDate and :endDate " +
+                "group by date(function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00')) " +
+                "order by date(function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00'))");
         query.setParameter("user", user);
-//        query.setParameter("startDate", start);
-//        query.setParameter("endDate", end); // TODO: fix date filtering
+        query.setParameter("startDate", start);
+        query.setParameter("endDate", end);
         List<Object[]> resultList = query.getResultList();
         return resultList.stream().map(objects -> new AchievementRate(
                 ((Date) objects[0]).toLocalDate(),
