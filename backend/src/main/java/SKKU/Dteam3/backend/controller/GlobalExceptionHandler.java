@@ -4,6 +4,7 @@ import SKKU.Dteam3.backend.error.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -44,5 +45,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UnsupportedJwtException.class)
     public ErrorCode handleUnsupportedJwtException(UnsupportedJwtException e) {
         return new ErrorCode(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ErrorCode handleConstraintViolationException(ConstraintViolationException e) {
+        return new ErrorCode(HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 }
