@@ -32,6 +32,8 @@ public class UserService {
 
     private final ResultRepository resultRepository;
 
+    private final GuestbookRepository guestbookRepository;
+
     private final KakaoApi kakaoApi;
 
     public void saveOrUpdate(KakaoTokenResponse kakaoTokenResponse) {
@@ -145,6 +147,17 @@ public class UserService {
         return ListDto.createAchieves(resultRepository.calculateMonthAchievementRateByUser(user, start, end).stream().toList());
     }
 
+    public ListDto<GuestbookResponseDto> getGuestBook(Long userId, User user, LocalDate date) {
+        User userFound = validateUserId(userId);
+        if (!isSameTome(user, userFound)) {
+            throw new IllegalArgumentException("타운 멤버가 아닙니다.");
+        }
+        return ListDto.createGuestbooks(guestbookRepository.findByUserAndDate(userFound, date));
+    }
+
+    public ListDto<GuestbookResponseDto> getMyGuestBook(User user, LocalDate date) {
+        return ListDto.createGuestbooks(guestbookRepository.findByUserAndDate(user, date));
+    }
 
     private User validateUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);

@@ -21,6 +21,11 @@ public class Guestbook {
     @NotNull
     private User user;
 
+    @OneToOne
+    @JoinColumn(name = "writer_id")
+    @NotNull
+    private User writer;
+
     @NotNull
     @Temporal(TemporalType.DATE)
     private LocalDate date;
@@ -37,8 +42,9 @@ public class Guestbook {
     @NotNull
     private int fontSize;
 
-    public Guestbook(User user, String content, String position, String font, int fontSize) {
+    public Guestbook(User user, User writer, String content, String position, String font, int fontSize) {
         this.user = user;
+        this.writer = writer;
         this.date = LocalDate.now();
         this.content = content;
         this.position = position;

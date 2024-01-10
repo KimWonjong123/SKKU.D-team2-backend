@@ -131,4 +131,26 @@ public class UserController {
                         Objects.requireNonNullElseGet(date, LocalDate::now)
                 );
         }
+
+        @GetMapping("/{userId}/guestbook")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<GuestbookResponseDto> getGuestBook(@PathVariable Long userId,
+                                                          Authentication authentication,
+                                                          @RequestParam(required = false) @PastOrPresent LocalDate date) {
+                return userService.getGuestBook(
+                        userId,
+                        (User) authentication.getPrincipal(),
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
+        }
+
+        @GetMapping("/me/guestbook")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<GuestbookResponseDto> getGuestBook(Authentication authentication,
+                                                          @RequestParam(required = false) @PastOrPresent LocalDate date) {
+                return userService.getMyGuestBook(
+                        (User) authentication.getPrincipal(),
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
+        }
 }
