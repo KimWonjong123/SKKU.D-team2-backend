@@ -22,6 +22,11 @@ public class ListDto <T> {
                 .collect(Collectors.toList()));
     }
 
+
+    public static ListDto<ShowMyTownsResponseDto> createTownList(List<ShowMyTownsResponseDto> list) {
+        return new ListDto<>(list.size(), list);
+    }
+
     public static ListDto<AchieveResponseDto> createAchieves(List<AchievementRate> achieves) {
         return new ListDto<>(achieves.size(), achieves.stream()
                 .map(AchieveResponseDto::new)
@@ -30,6 +35,11 @@ public class ListDto <T> {
 
     public static ListDto<TodoDetail> createTodoDetails(List<TodoDetail> todoDetails) {
         return new ListDto<>(todoDetails.size(), todoDetails);
+    }
+
+
+    public static ListDto<TownTodoInfoDto> createTownTodoInfo(List<AddTodoRequestDto> townTodoInfo) {
+        return new ListDto<>(townTodoInfo.size(), townTodoInfo.stream().map(TownTodoInfoDto::new).collect(Collectors.toList()));
     }
 
     public static ListDto<GuestbookResponseDto> createGuestbooks(List<Guestbook> guestbooks) {

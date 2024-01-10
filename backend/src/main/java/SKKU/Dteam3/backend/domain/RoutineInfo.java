@@ -17,7 +17,7 @@ public class RoutineInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "town_id")
     private Town town;
 
@@ -51,6 +51,18 @@ public class RoutineInfo {
     private Boolean sun;
 
     public RoutineInfo(LocalDate startDate, LocalDate endDate, Boolean mon, Boolean tue, Boolean wed, Boolean thu, Boolean fri, Boolean sat, Boolean sun) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.mon = mon;
+        this.tue = tue;
+        this.wed = wed;
+        this.thu = thu;
+        this.fri = fri;
+        this.sat = sat;
+        this.sun = sun;
+    }
+    public RoutineInfo(Town town, LocalDate startDate, LocalDate endDate, Boolean mon, Boolean tue, Boolean wed, Boolean thu, Boolean fri, Boolean sat, Boolean sun) {
+        this.town = town;
         this.startDate = startDate;
         this.endDate = endDate;
         this.mon = mon;

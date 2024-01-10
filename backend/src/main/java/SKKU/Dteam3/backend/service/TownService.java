@@ -1,8 +1,10 @@
 package SKKU.Dteam3.backend.service;
 
+import SKKU.Dteam3.backend.domain.Todo;
 import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
+import SKKU.Dteam3.backend.repository.TodoRepository;
 import SKKU.Dteam3.backend.repository.TownRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,10 @@ public class TownService {
     private final TownThumbnailService townThumbnailService;
 
     private final TownMemberService townMemberService;
+
+    private final TodoService todoService;
+
+    private final TodoRepository todoRepository;
 
     public List<ShowMyTownsResponseDto> showMyTowns(User user) {
         List<Town> allTown = townRepository.findByUserId(user.getId());
@@ -44,12 +49,53 @@ public class TownService {
     public AddTownResponseDto addTown(User user, AddTownRequestDto requestDto, MultipartFile thumbnailFile) {
         Town town = new Town(user, requestDto.getName(), requestDto.getDescription());
         town.createInviteLink(this.getURI(town.getId()));
-        townRepository.save(town);//TODO: 투두 저장하기
+        townRepository.save(town);
         townThumbnailService.addTownThumbnail(thumbnailFile, town);
         townMemberService.saveMemberShip(user,town);
+        for(AddTodoRequestDto todos : requestDto.getTownRoutine()){
+            todoService.addTownTodo(new AddTodoRequestDto(
+                    todos.getContent(),
+                    town.getDescription(),
+                    true,
+                    todos.getEndDate(),
+                    todos.getMon(),
+                    todos.getTue(),
+                    todos.getWed(),
+                    todos.getThu(),
+                    todos.getFri(),
+                    todos.getSat(),
+                    todos.getSun()
+            ),user, town);
+        }
         return new AddTownResponseDto(town.getInviteLinkHash(), town.getId());
+    }
 
 
+    public ModifyMyTownResponseDto modifyMyTown(User user, Long townId, AddTownRequestDto requestDto) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isLeaderOfTown(user,town);
+        town.updateTownInfo(requestDto.getName(),requestDto.getDescription());
+        townRepository.update(town);
+        for(AddTodoRequestDto todos : requestDto.getTownRoutine()){
+            todoService.saveOrUpdate(new AddTodoRequestDto(
+                    todos.getContent(),
+                    town.getDescription(),
+                    true,
+                    todos.getEndDate(),
+                    todos.getMon(),
+                    todos.getTue(),
+                    todos.getWed(),
+                    todos.getThu(),
+                    todos.getFri(),
+                    todos.getSat(),
+                    todos.getSun()
+            ),user, town);
+        }
+        List<User> Members = townMemberService.findMembersByTownId(townId, user.getId());
+        updateMembersTownTodo(town, requestDto.getTownRoutine(), Members);
+        return new ModifyMyTownResponseDto(townId, LocalDateTime.now());
     }
 
     public ShowMyTownResponseDto showMyTown(User user, Long townId) {
@@ -62,16 +108,27 @@ public class TownService {
                 town.getDescription(),
                 town.getMemberNum(),
                 town.getLeader().getName(),
-                new ArrayList<>()//TODO: 루틴투두 반환 작업하기
+                ListDto.createTownTodoInfo(todoRepository.findByTownId(town))
         );
     }
 
+
+    public void deleteTown(User user, Long townId) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isLeaderOfTown(user,town);
+        townThumbnailService.delete(townId);
+        townMemberService.removeMemberShip(townId);
+        todoService.removeTownTodo(townId);
+        townRepository.delete(town);
+    }
 
     public Resource downloadTownThumbnail(Long townId, User user) {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
-        //isMemberOfTown(user,town);
+        isMemberOfTown(user,town);
         return townThumbnailService.downloadTownThumbnail(townId);
     }
 
@@ -139,5 +196,10 @@ public class TownService {
         return builder.toString();
     }
 
+    private void updateMembersTownTodo(Town town, List<AddTodoRequestDto> requestDto, List<User> members) {
+        for(User user : members){
+            todoService.saveOrUpdate(requestDto,user,town);
+        }
+    }
 
 }

@@ -1,15 +1,14 @@
 package SKKU.Dteam3.backend.controller;
 
-import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.service.TownService;
-import SKKU.Dteam3.backend.service.TownThumbnailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,13 +21,12 @@ public class TownController {
 
     private final TownService townService;
 
-    private final TownThumbnailService townThumbnailService;
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public List<ShowMyTownsResponseDto> showMyTowns(Authentication authentication){
+    public ListDto<ShowMyTownsResponseDto> showMyTowns(Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        return townService.showMyTowns(user);
+        return ListDto.createTownList(townService.showMyTowns(user));
     }
 
 
@@ -52,6 +50,26 @@ public class TownController {
                 user,
                 townId
         );
+    }
+
+    @PostMapping("/{townId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ModifyMyTownResponseDto modifyMyTown(@Valid @PathVariable Long townId,
+                                                @RequestBody AddTownRequestDto requestDto, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.modifyMyTown(
+                user,
+                townId,
+                requestDto
+        );
+    }
+
+    @DeleteMapping("/{townId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMyTown(@Valid @PathVariable Long townId,
+                             Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        townService.deleteTown(user,townId);
     }
 
     @GetMapping("/{townId}/image")
@@ -81,5 +99,6 @@ public class TownController {
         User user = (User) authentication.getPrincipal();
         return townService.findTownByInviteLink(inviteLink, user);
     }
+
 
 }

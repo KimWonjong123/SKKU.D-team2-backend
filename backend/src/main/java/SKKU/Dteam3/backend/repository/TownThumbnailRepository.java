@@ -32,4 +32,8 @@ public class TownThumbnailRepository {
     public TownThumbnail findByUUID(UUID uuid){
         return em.find(TownThumbnail.class, uuid);
     }
+
+    public void delete(TownThumbnail townThumbnail) {
+        em.remove(townThumbnail);
+    }
 }

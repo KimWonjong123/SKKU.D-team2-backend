@@ -7,7 +7,6 @@ import SKKU.Dteam3.backend.domain.*;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.repository.CheerRepository;
 import SKKU.Dteam3.backend.repository.PokeRepository;
-import SKKU.Dteam3.backend.repository.ResultRepository;
 import SKKU.Dteam3.backend.repository.TownMemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +81,120 @@ public class TodoService {
         );
         resultRepository.save(result);
         return new AddTodoResponseDto(todo.getId(), todo.getCreatedAt());
+    }
+    public AddTodoResponseDto addTownTodo(AddTodoRequestDto requestDto, User user, Town town) {
+        Todo todo = null;
+        if (requestDto.getRoutine()) {
+            // 타운 공통 루틴일 경우
+            try {
+                RoutineInfo routineInfo = new RoutineInfo(
+                        town,
+                        LocalDate.now(),
+                        requestDto.getEndDate().toLocalDate(),
+                        requestDto.getMon(),
+                        requestDto.getTue(),
+                        requestDto.getWed(),
+                        requestDto.getThu(),
+                        requestDto.getFri(),
+                        requestDto.getSat(),
+                        requestDto.getSun()
+                );
+                routineInfoRepository.save(routineInfo);
+                todo = new Todo(
+                        requestDto.getContent(),
+                        requestDto.getTodoClass(),
+                        user,
+                        routineInfo
+                );
+                todoRepository.save(todo);
+            } catch (NullPointerException e) {
+                throw new IllegalArgumentException("루틴의 상세정보가 누락되었습니다.");
+            }
+        } else {
+            // 루틴이 아닐 경우 -> 개인추가 타운투두이다.
+            todo = new Todo(
+                    requestDto.getContent(),
+                    requestDto.getTodoClass(),
+                    user,
+                    null
+            );
+            todoRepository.save(todo);
+        }
+        Result result = new Result(
+                user,
+                todo
+        );
+        resultRepository.save(result);
+        return new AddTodoResponseDto(todo.getId(), todo.getCreatedAt());
+    }
+
+    public void saveOrUpdate(AddTodoRequestDto requestDto, User user, Town town) {
+        List<Todo> todoList = todoRepository.findTodosByTownId(town.getId(), user.getId());
+        for(Todo todo : todoList){
+            routineInfoRepository.delete(todo.getRoutineInfo());
+            todoRepository.delete(todo);
+        }
+        try{
+            RoutineInfo routineInfo = new RoutineInfo(
+                    town,
+                    LocalDate.now(),
+                    requestDto.getEndDate().toLocalDate(),
+                    requestDto.getMon(),
+                    requestDto.getTue(),
+                    requestDto.getWed(),
+                    requestDto.getThu(),
+                    requestDto.getFri(),
+                    requestDto.getSat(),
+                    requestDto.getSun()
+            );
+            Todo todo = new Todo(requestDto.getContent(),
+                    requestDto.getTodoClass(),
+                    user,
+                    routineInfo);
+            routineInfoRepository.save(todo.getRoutineInfo());
+            todoRepository.save(todo);
+        }catch (NullPointerException e){
+            throw new IllegalArgumentException("루틴 상세 정보가 누락되었습니다.");
+        }
+    }
+
+    public void saveOrUpdate(List<AddTodoRequestDto> requestDto, User user, Town town) {
+        List<Todo> todoList = todoRepository.findTodosByTownId(town.getId(), user.getId());
+        for(Todo todo : todoList){
+            routineInfoRepository.delete(todo.getRoutineInfo());
+            todoRepository.delete(todo);
+        }
+        for(AddTodoRequestDto dto : requestDto){
+            try {
+                RoutineInfo routineInfo = new RoutineInfo(
+                        town,
+                        LocalDate.now(),
+                        dto.getEndDate().toLocalDate(),
+                        dto.getMon(),
+                        dto.getTue(),
+                        dto.getWed(),
+                        dto.getThu(),
+                        dto.getFri(),
+                        dto.getSat(),
+                        dto.getSun()
+                );
+                Todo todo = new Todo(dto.getContent(),
+                        dto.getTodoClass(),
+                        user,
+                        routineInfo);
+                routineInfoRepository.save(todo.getRoutineInfo());
+                todoRepository.save(todo);
+            } catch (NullPointerException e) {
+                throw new IllegalArgumentException("루틴 상세 정보가 누락되었습니다.");
+            }
+        }
+    }
+
+    public void removeTownTodo(Long townId) {
+        List<Todo> todoList = todoRepository.findAllTodosByTownId(townId);
+        for(Todo todo : todoList){
+            deleteTodo(todo.getId(),todo.getUser());
+        }
     }
 
     public CheckTodoResponseDto checkTodo(Long todoId, User user) {
@@ -216,4 +329,5 @@ public class TodoService {
     {
         return townMemberRepository.countByTwoUserId(userA.getId(), userB.getId()) > 0;
     }
+
 }
