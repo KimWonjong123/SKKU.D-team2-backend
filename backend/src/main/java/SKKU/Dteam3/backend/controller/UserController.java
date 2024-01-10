@@ -1,5 +1,6 @@
 package SKKU.Dteam3.backend.controller;
 
+import SKKU.Dteam3.backend.domain.TodoDetail;
 import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
@@ -58,39 +59,77 @@ public class UserController {
                 return userService.updateMemo(user, requestDto);
         }
 
+        @GetMapping("/{userId}/todo")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<TodoDetail> getTodo(Authentication authentication,
+                                           @PathVariable Long userId,
+                                           @RequestParam(required = false) LocalDate date) {
+                return userService.getTodo(
+                        userId,
+                        (User) authentication.getPrincipal(),
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
+        }
+
+        @GetMapping("/me/todo")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<TodoDetail> getTodo(Authentication authentication,
+                                           @RequestParam(required = false) LocalDate date) {
+                return userService.getMyTodo(
+                        (User) authentication.getPrincipal(),
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
+        }
+
         @GetMapping("/{userId}/town")
         @ResponseStatus(HttpStatus.OK)
         public ListDto<TownResponseDto> getTown(@PathVariable Long userId,
                                                 Authentication authentication) {
-                List<Town> towns = userService.getTown(
-                        userId,
-                        (User) authentication.getPrincipal()
-                );
-                return ListDto.createTowns(towns);
+                return userService.getTown(userId, (User) authentication.getPrincipal());
         }
 
-        @GetMapping("{userId}/achieve")
+        @GetMapping("/{userId}/achieve")
         @ResponseStatus(HttpStatus.OK)
         public AchieveResponseDto getAchieve(@PathVariable Long userId,
                                              Authentication authentication,
-                                             @RequestParam LocalDate date) {
-                Integer achieve = userService.getAchieve(
+                                             @RequestParam(required = false) LocalDate date) {
+                return userService.getAchieve(
                         userId,
                         (User) authentication.getPrincipal(),
-                        date
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
                 );
-                return new AchieveResponseDto(date, achieve);
         }
 
-        @GetMapping("me/achieve")
+        @GetMapping("/me/achieve")
         @ResponseStatus(HttpStatus.OK)
         public AchieveResponseDto getAchieve(Authentication authentication,
                                              @RequestParam(required = false) LocalDate date) {
                 User user = (User) authentication.getPrincipal();
-                Integer achieve = userService.getMyAchieve(
+                return userService.getMyAchieve(
                         user,
                         Objects.requireNonNullElseGet(date, LocalDate::now)
                 );
-                return new AchieveResponseDto(Objects.requireNonNullElseGet(date, LocalDate::now), achieve);
+        }
+
+        @GetMapping("/{userId}/calendar")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<AchieveResponseDto> getCalendar(@PathVariable Long userId,
+                                                       Authentication authentication,
+                                                       @RequestParam LocalDate date) {
+                return userService.getCalendar(
+                        userId,
+                        (User) authentication.getPrincipal(),
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
+        }
+
+        @GetMapping("/me/calendar")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<AchieveResponseDto> getCalendar(Authentication authentication,
+                                                       @RequestParam LocalDate date) {
+                return userService.getMyCalendar(
+                        (User) authentication.getPrincipal(),
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
         }
 }

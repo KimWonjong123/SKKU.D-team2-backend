@@ -1,5 +1,7 @@
 package SKKU.Dteam3.backend.dto;
 
+import SKKU.Dteam3.backend.domain.AchievementRate;
+import SKKU.Dteam3.backend.domain.TodoDetail;
 import SKKU.Dteam3.backend.domain.Town;
 import lombok.*;
 
@@ -17,5 +19,15 @@ public class ListDto <T> {
         return new ListDto<>(towns.size(), towns.stream()
                 .map(TownResponseDto::new)
                 .collect(Collectors.toList()));
+    }
+
+    public static ListDto<AchieveResponseDto> createAchieves(List<AchievementRate> achieves) {
+        return new ListDto<>(achieves.size(), achieves.stream()
+                .map(AchieveResponseDto::new)
+                .collect(Collectors.toList()));
+    }
+
+    public static ListDto<TodoDetail> createTodoDetails(List<TodoDetail> todoDetails) {
+        return new ListDto<>(todoDetails.size(), todoDetails);
     }
 }
