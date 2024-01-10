@@ -127,6 +127,69 @@ public class TodoService {
         resultRepository.save(result);
         return new AddTodoResponseDto(todo.getId(), todo.getCreatedAt());
     }
+
+    public void saveOrUpdate(AddTodoRequestDto requestDto, User user, Town town) {
+        List<Todo> todoList = todoRepository.findTodosByTownId(town.getId(), user.getId());
+        for(Todo todo : todoList){
+            routineInfoRepository.delete(todo.getRoutineInfo());
+            todoRepository.delete(todo);
+        }
+        try{
+            RoutineInfo routineInfo = new RoutineInfo(
+                    town,
+                    LocalDate.now(),
+                    requestDto.getEndDate().toLocalDate(),
+                    requestDto.getMon(),
+                    requestDto.getTue(),
+                    requestDto.getWed(),
+                    requestDto.getThu(),
+                    requestDto.getFri(),
+                    requestDto.getSat(),
+                    requestDto.getSun()
+            );
+            Todo todo = new Todo(requestDto.getContent(),
+                    requestDto.getTodoClass(),
+                    user,
+                    routineInfo);
+            routineInfoRepository.save(todo.getRoutineInfo());
+            todoRepository.save(todo);
+        }catch (NullPointerException e){
+            throw new IllegalArgumentException("루틴 상세 정보가 누락되었습니다.");
+        }
+    }
+
+    public void saveOrUpdate(List<AddTodoRequestDto> requestDto, User user, Town town) {
+        List<Todo> todoList = todoRepository.findTodosByTownId(town.getId(), user.getId());
+        for(Todo todo : todoList){
+            routineInfoRepository.delete(todo.getRoutineInfo());
+            todoRepository.delete(todo);
+        }
+        for(AddTodoRequestDto dto : requestDto){
+            try {
+                RoutineInfo routineInfo = new RoutineInfo(
+                        town,
+                        LocalDate.now(),
+                        dto.getEndDate().toLocalDate(),
+                        dto.getMon(),
+                        dto.getTue(),
+                        dto.getWed(),
+                        dto.getThu(),
+                        dto.getFri(),
+                        dto.getSat(),
+                        dto.getSun()
+                );
+                Todo todo = new Todo(dto.getContent(),
+                        dto.getTodoClass(),
+                        user,
+                        routineInfo);
+                routineInfoRepository.save(todo.getRoutineInfo());
+                todoRepository.save(todo);
+            } catch (NullPointerException e) {
+                throw new IllegalArgumentException("루틴 상세 정보가 누락되었습니다.");
+            }
+        }
+    }
+
     public CheckTodoResponseDto checkTodo(Long todoId, User user) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Todo가 없습니다.")
@@ -259,4 +322,5 @@ public class TodoService {
     {
         return townMemberRepository.countByTwoUserId(userA.getId(), userB.getId()) > 0;
     }
+
 }

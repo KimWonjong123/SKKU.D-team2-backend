@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,6 +49,18 @@ public class TownController {
         return townService.showMyTown(
                 user,
                 townId
+        );
+    }
+
+    @PostMapping("/{townId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ModifyMyTownResponseDto modifyMyTown(@Valid @PathVariable Long townId,
+                                                @RequestBody AddTownRequestDto requestDto, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.modifyMyTown(
+                user,
+                townId,
+                requestDto
         );
     }
 

@@ -51,4 +51,9 @@ public class Town {
     public void createInviteLink(String inviteLink) {
         this.inviteLinkHash = inviteLink;
     }
+
+    public void updateTownInfo(String name, String description){
+        this.name = name;
+        this.description = description;
+    }
 }

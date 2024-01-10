@@ -2,6 +2,7 @@ package SKKU.Dteam3.backend.repository;
 
 import SKKU.Dteam3.backend.domain.*;
 import SKKU.Dteam3.backend.dto.AddTodoRequestDto;
+import SKKU.Dteam3.backend.dto.ListDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
@@ -73,5 +74,14 @@ public class TodoRepository {
                                     ((RoutineInfo)objects[1]).getSun()
                             );
                         }).toList();
+    }
+
+    public List<Todo> findTodosByTownId(Long townId, Long userId) {
+         return em.createQuery("SELECT t FROM Todo t LEFT JOIN FETCH RoutineInfo " +
+                         "ro on t.routineInfo.id = ro.id WHERE ro.town.id = :id AND t.user.id = :userId",Todo.class)
+                .setParameter("id",townId)
+                .setParameter("userId",userId)
+                 .getResultList();
+
     }
 }
