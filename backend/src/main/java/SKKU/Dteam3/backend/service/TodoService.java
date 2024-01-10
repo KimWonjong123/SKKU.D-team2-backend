@@ -190,6 +190,10 @@ public class TodoService {
         }
     }
 
+    public List<AddTodoRequestDto> getTownTodo(Town town) {
+        return todoRepository.findByTownId(town);
+    }
+
     public void removeTownTodo(Long townId) {
         List<Todo> todoList = todoRepository.findAllTodosByTownId(townId);
         for(Todo todo : todoList){

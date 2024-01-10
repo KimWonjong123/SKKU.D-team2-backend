@@ -52,19 +52,19 @@ public class TownService {
         townRepository.save(town);
         townThumbnailService.addTownThumbnail(thumbnailFile, town);
         townMemberService.saveMemberShip(user,town);
-        for(AddTodoRequestDto todos : requestDto.getTownRoutine()){
+        for(AddTodoRequestDto dto : requestDto.getTownRoutine()){
             todoService.addTownTodo(new AddTodoRequestDto(
-                    todos.getContent(),
+                    dto.getContent(),
                     town.getDescription(),
                     true,
-                    todos.getEndDate(),
-                    todos.getMon(),
-                    todos.getTue(),
-                    todos.getWed(),
-                    todos.getThu(),
-                    todos.getFri(),
-                    todos.getSat(),
-                    todos.getSun()
+                    dto.getEndDate(),
+                    dto.getMon(),
+                    dto.getTue(),
+                    dto.getWed(),
+                    dto.getThu(),
+                    dto.getFri(),
+                    dto.getSat(),
+                    dto.getSun()
             ),user, town);
         }
         return new AddTownResponseDto(town.getInviteLinkHash(), town.getId());
@@ -158,6 +158,34 @@ public class TownService {
                 town.getLeader().getName(),
                 town.getName()
         );
+    }
+
+    public joinTownResponseDto joinTown(String inviteLink, User user) {
+        Town town = townRepository.findByInviteLink(inviteLink).orElseThrow(
+                () -> new IllegalArgumentException("유효하지 않은 초대링크입니다."));
+        isNotMemberOfTown(user,town);
+        if(!townMemberService.saveMemberShip(user,town).equals(user.getId())){
+            throw new RuntimeException("타운 멤버 저장에 실패하였습니다");
+        }
+        List<User> users =new ArrayList<>();
+        users.add(user);
+        List<AddTodoRequestDto> requestDtoList = todoService.getTownTodo(town);
+        for(AddTodoRequestDto dto : requestDtoList){
+            todoService.addTownTodo(new AddTodoRequestDto(
+                    dto.getContent(),
+                    town.getDescription(),
+                    true,
+                    dto.getEndDate(),
+                    dto.getMon(),
+                    dto.getTue(),
+                    dto.getWed(),
+                    dto.getThu(),
+                    dto.getFri(),
+                    dto.getSat(),
+                    dto.getSun()
+            ),user, town);
+        }
+        return new joinTownResponseDto(town.getId(), LocalDateTime.now());
     }
 
     private void isLeaderOfTown(User user, Town town) {

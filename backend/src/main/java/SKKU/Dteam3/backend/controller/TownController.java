@@ -100,5 +100,14 @@ public class TownController {
         return townService.findTownByInviteLink(inviteLink, user);
     }
 
+    @PostMapping("/invitelink/{invitelink}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public joinTownResponseDto joinTown(@Valid @PathVariable(value = "invitelink") String inviteLink, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.joinTown(
+                inviteLink,
+                user
+        );
+    }
 
 }
