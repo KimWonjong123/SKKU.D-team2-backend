@@ -18,4 +18,8 @@ public class ListDto <T> {
                 .map(TownResponseDto::new)
                 .collect(Collectors.toList()));
     }
+
+    public static ListDto<ShowMyTownsResponseDto> createTownList(List<ShowMyTownsResponseDto> list){
+        return new ListDto<>(list.size(), list);
+    }
 }

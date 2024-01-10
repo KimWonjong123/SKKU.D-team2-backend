@@ -1,10 +1,8 @@
 package SKKU.Dteam3.backend.controller;
 
-import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.service.TownService;
-import SKKU.Dteam3.backend.service.TownThumbnailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -22,13 +20,12 @@ public class TownController {
 
     private final TownService townService;
 
-    private final TownThumbnailService townThumbnailService;
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public List<ShowMyTownsResponseDto> showMyTowns(Authentication authentication){
+    public ListDto<ShowMyTownsResponseDto> showMyTowns(Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        return townService.showMyTowns(user);
+        return ListDto.createTownList(townService.showMyTowns(user));
     }
 
 
