@@ -3,6 +3,7 @@ package SKKU.Dteam3.backend.service;
 import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
+import SKKU.Dteam3.backend.repository.TodoRepository;
 import SKKU.Dteam3.backend.repository.TownRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,8 @@ public class TownService {
     private final TownMemberService townMemberService;
 
     private final TodoService todoService;
+
+    private final TodoRepository todoRepository;
 
     public List<ShowMyTownsResponseDto> showMyTowns(User user) {
         List<Town> allTown = townRepository.findByUserId(user.getId());
@@ -49,7 +53,7 @@ public class TownService {
         townThumbnailService.addTownThumbnail(thumbnailFile, town);
         townMemberService.saveMemberShip(user,town);
         for(AddTodoRequestDto todos : requestDto.getTownRoutine()){
-            todoService.addTodo(new AddTodoRequestDto(
+            todoService.addTownTodo(new AddTodoRequestDto(
                     todos.getContent(),
                     town.getDescription(),
                     todos.getRoutine(),
@@ -61,7 +65,7 @@ public class TownService {
                     todos.getFri(),
                     todos.getSat(),
                     todos.getSun()
-            ),user);
+            ),user, town);
         }
         return new AddTownResponseDto(town.getInviteLinkHash(), town.getId());
 
@@ -73,12 +77,13 @@ public class TownService {
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
         isMemberOfTown(user,town);
+        System.out.println((long) todoRepository.findByTownId(town).size());
         return new ShowMyTownResponseDto(
                 town.getName(),
                 town.getDescription(),
                 town.getMemberNum(),
                 town.getLeader().getName(),
-                new ArrayList<>()//TODO: 루틴투두 반환 작업하기
+                ListDto.createTownTodoInfo(todoRepository.findByTownId(town))
         );
     }
 

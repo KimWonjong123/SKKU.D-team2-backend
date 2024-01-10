@@ -7,7 +7,6 @@ import SKKU.Dteam3.backend.domain.*;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.repository.CheerRepository;
 import SKKU.Dteam3.backend.repository.PokeRepository;
-import SKKU.Dteam3.backend.repository.ResultRepository;
 import SKKU.Dteam3.backend.repository.TownMemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -83,7 +82,51 @@ public class TodoService {
         resultRepository.save(result);
         return new AddTodoResponseDto(todo.getId(), todo.getCreatedAt());
     }
-
+    public AddTodoResponseDto addTownTodo(AddTodoRequestDto requestDto, User user, Town town) {
+        Todo todo = null;
+        if (requestDto.getRoutine()) {
+            // 타운 공통 루틴일 경우
+            try {
+                RoutineInfo routineInfo = new RoutineInfo(
+                        town,
+                        LocalDate.now(),
+                        requestDto.getEndDate().toLocalDate(),
+                        requestDto.getMon(),
+                        requestDto.getTue(),
+                        requestDto.getWed(),
+                        requestDto.getThu(),
+                        requestDto.getFri(),
+                        requestDto.getSat(),
+                        requestDto.getSun()
+                );
+                routineInfoRepository.save(routineInfo);
+                todo = new Todo(
+                        requestDto.getContent(),
+                        requestDto.getTodoClass(),
+                        user,
+                        routineInfo
+                );
+                todoRepository.save(todo);
+            } catch (NullPointerException e) {
+                throw new IllegalArgumentException("루틴의 상세정보가 누락되었습니다.");
+            }
+        } else {
+            // 루틴이 아닐 경우 -> 개인추가 타운투두이다.
+            todo = new Todo(
+                    requestDto.getContent(),
+                    requestDto.getTodoClass(),
+                    user,
+                    null
+            );
+            todoRepository.save(todo);
+        }
+        Result result = new Result(
+                user,
+                todo
+        );
+        resultRepository.save(result);
+        return new AddTodoResponseDto(todo.getId(), todo.getCreatedAt());
+    }
     public CheckTodoResponseDto checkTodo(Long todoId, User user) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Todo가 없습니다.")
