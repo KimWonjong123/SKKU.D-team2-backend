@@ -96,4 +96,10 @@ public class TownThumbnailService {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos+1);
     }
+
+    public void delete(Long townId) {
+        townThumbnailRepository.delete(townThumbnailRepository
+                .findByUUID(townThumbnailRepository
+                        .findUUIDByTownId(townId)));
+    }
 }

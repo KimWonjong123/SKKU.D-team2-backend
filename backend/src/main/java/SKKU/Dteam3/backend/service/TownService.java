@@ -113,6 +113,17 @@ public class TownService {
     }
 
 
+    public void deleteTown(User user, Long townId) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isLeaderOfTown(user,town);
+        townThumbnailService.delete(townId);
+        townMemberService.removeMemberShip(townId);
+        todoService.removeTownTodo(townId);
+        townRepository.delete(town);
+    }
+
     public Resource downloadTownThumbnail(Long townId, User user) {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")

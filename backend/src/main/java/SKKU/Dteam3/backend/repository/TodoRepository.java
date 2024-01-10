@@ -84,4 +84,11 @@ public class TodoRepository {
                  .getResultList();
 
     }
+
+    public List<Todo> findAllTodosByTownId(Long townId) {
+        return em.createQuery("SELECT t FROM Todo t LEFT JOIN FETCH RoutineInfo " +
+                "ro on t.routineInfo.id = ro.id WHERE ro.town.id = :id", Todo.class)
+                .setParameter("id",townId)
+                .getResultList();
+    }
 }

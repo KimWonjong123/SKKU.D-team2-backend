@@ -29,4 +29,11 @@ public class TownMemberService {
     public List<User> findMembersByTownId(Long townId, Long leaderId) {
         return townMemberRepository.findByTownId(townId).stream().filter(o -> o.getUser().getId()!=leaderId).map(TownMember::getUser).toList();
     }
+
+    public void removeMemberShip(Long townId) {
+        List<TownMember> townMemberList = townMemberRepository.findByTownId(townId);
+        for(TownMember townMember : townMemberList){
+            townMemberRepository.delete(townMember);
+        }
+    }
 }

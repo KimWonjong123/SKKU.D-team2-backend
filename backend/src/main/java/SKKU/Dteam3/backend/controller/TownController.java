@@ -64,6 +64,14 @@ public class TownController {
         );
     }
 
+    @DeleteMapping("/{townId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMyTown(@Valid @PathVariable Long townId,
+                             Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        townService.deleteTown(user,townId);
+    }
+
     @GetMapping("/{townId}/image")
     @ResponseStatus(HttpStatus.CREATED)
     public Resource getTownThumbnail(@Valid @PathVariable Long townId, Authentication authentication) {
@@ -91,5 +99,6 @@ public class TownController {
         User user = (User) authentication.getPrincipal();
         return townService.findTownByInviteLink(inviteLink, user);
     }
+
 
 }

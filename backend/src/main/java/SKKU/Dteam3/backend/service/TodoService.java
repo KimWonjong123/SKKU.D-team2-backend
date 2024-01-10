@@ -190,6 +190,13 @@ public class TodoService {
         }
     }
 
+    public void removeTownTodo(Long townId) {
+        List<Todo> todoList = todoRepository.findAllTodosByTownId(townId);
+        for(Todo todo : todoList){
+            deleteTodo(todo.getId(),todo.getUser());
+        }
+    }
+
     public CheckTodoResponseDto checkTodo(Long todoId, User user) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Todo가 없습니다.")

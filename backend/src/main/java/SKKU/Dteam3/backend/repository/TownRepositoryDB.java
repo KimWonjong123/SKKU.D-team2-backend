@@ -1,7 +1,6 @@
 package SKKU.Dteam3.backend.repository;
 
 import SKKU.Dteam3.backend.domain.Town;
-import SKKU.Dteam3.backend.domain.TownMember;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -62,5 +61,10 @@ public class TownRepositoryDB implements TownRepository{
         } catch (Exception e){
             return Optional.empty();
         }
+    }
+
+    @Override
+    public void delete(Town town) {
+        em.remove(town);
     }
 }
