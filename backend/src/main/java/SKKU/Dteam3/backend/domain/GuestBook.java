@@ -45,4 +45,13 @@ public class GuestBook {
         this.font = font;
         this.fontSize = fontSize;
     }
+
+    public GuestBook(User user) {
+        this.user = user;
+        this.date = LocalDate.now();
+        this.content = "";
+        this.position = "";
+        this.font = "";
+        this.fontSize = 0;
+    }
 }
