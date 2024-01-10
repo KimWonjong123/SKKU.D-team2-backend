@@ -1,6 +1,7 @@
 package SKKU.Dteam3.backend.dto;
 
 import SKKU.Dteam3.backend.domain.AchievementRate;
+import SKKU.Dteam3.backend.domain.Guestbook;
 import SKKU.Dteam3.backend.domain.TodoDetail;
 import SKKU.Dteam3.backend.domain.Town;
 import lombok.*;
@@ -29,5 +30,11 @@ public class ListDto <T> {
 
     public static ListDto<TodoDetail> createTodoDetails(List<TodoDetail> todoDetails) {
         return new ListDto<>(todoDetails.size(), todoDetails);
+    }
+
+    public static ListDto<GuestbookResponseDto> createGuestbooks(List<Guestbook> guestbooks) {
+        return new ListDto<>(guestbooks.size(), guestbooks.stream()
+                .map(GuestbookResponseDto::new)
+                .collect(Collectors.toList()));
     }
 }

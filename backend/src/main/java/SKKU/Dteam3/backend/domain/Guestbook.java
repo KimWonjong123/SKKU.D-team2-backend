@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GuestBook {
+public class Guestbook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +20,11 @@ public class GuestBook {
     @JoinColumn(name = "user_id")
     @NotNull
     private User user;
+
+    @OneToOne
+    @JoinColumn(name = "writer_id")
+    @NotNull
+    private User writer;
 
     @NotNull
     @Temporal(TemporalType.DATE)
@@ -37,9 +42,26 @@ public class GuestBook {
     @NotNull
     private int fontSize;
 
-    public GuestBook(User user, String content, String position, String font, int fontSize) {
+    public Guestbook(User user, User writer, String content, String position, String font, int fontSize) {
+        this.user = user;
+        this.writer = writer;
+        this.date = LocalDate.now();
+        this.content = content;
+        this.position = position;
+        this.font = font;
+        this.fontSize = fontSize;
+    }
+
+    public Guestbook(User user) {
         this.user = user;
         this.date = LocalDate.now();
+        this.content = "";
+        this.position = "";
+        this.font = "";
+        this.fontSize = 0;
+    }
+
+    public void updateGuestbook(String content, String position, String font, Integer fontSize) {
         this.content = content;
         this.position = position;
         this.font = font;
