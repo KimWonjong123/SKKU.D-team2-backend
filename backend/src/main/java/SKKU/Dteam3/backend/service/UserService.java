@@ -147,7 +147,7 @@ public class UserService {
         return ListDto.createAchieves(resultRepository.calculateMonthAchievementRateByUser(user, start, end).stream().toList());
     }
 
-    public ListDto<GuestbookResponseDto> getGuestBook(Long userId, User user, LocalDate date) {
+    public ListDto<GuestbookResponseDto> getGuestbook(Long userId, User user, LocalDate date) {
         User userFound = validateUserId(userId);
         if (!isSameTome(user, userFound)) {
             throw new IllegalArgumentException("타운 멤버가 아닙니다.");
@@ -155,7 +155,7 @@ public class UserService {
         return ListDto.createGuestbooks(guestbookRepository.findByUserAndDate(userFound, date));
     }
 
-    public ListDto<GuestbookResponseDto> getMyGuestBook(User user, LocalDate date) {
+    public ListDto<GuestbookResponseDto> getMyGuestbook(User user, LocalDate date) {
         return ListDto.createGuestbooks(guestbookRepository.findByUserAndDate(user, date));
     }
 

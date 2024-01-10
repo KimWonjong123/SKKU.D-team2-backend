@@ -137,7 +137,7 @@ public class UserController {
         public ListDto<GuestbookResponseDto> getGuestBook(@PathVariable Long userId,
                                                           Authentication authentication,
                                                           @RequestParam(required = false) @PastOrPresent LocalDate date) {
-                return userService.getGuestBook(
+                return userService.getGuestbook(
                         userId,
                         (User) authentication.getPrincipal(),
                         Objects.requireNonNullElseGet(date, LocalDate::now)
@@ -148,7 +148,7 @@ public class UserController {
         @ResponseStatus(HttpStatus.OK)
         public ListDto<GuestbookResponseDto> getGuestBook(Authentication authentication,
                                                           @RequestParam(required = false) @PastOrPresent LocalDate date) {
-                return userService.getMyGuestBook(
+                return userService.getMyGuestbook(
                         (User) authentication.getPrincipal(),
                         Objects.requireNonNullElseGet(date, LocalDate::now)
                 );
