@@ -1,5 +1,6 @@
 package SKKU.Dteam3.backend.controller;
 
+import SKKU.Dteam3.backend.domain.TodoDetail;
 import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
@@ -56,6 +57,28 @@ public class UserController {
                                           @RequestBody UpdateMemoRequestDto requestDto) {
                 User user = (User) authentication.getPrincipal();
                 return userService.updateMemo(user, requestDto);
+        }
+
+        @GetMapping("/{userId}/todo")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<TodoDetail> getTodo(Authentication authentication,
+                                           @PathVariable Long userId,
+                                           @RequestParam(required = false) LocalDate date) {
+                return userService.getTodo(
+                        userId,
+                        (User) authentication.getPrincipal(),
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
+        }
+
+        @GetMapping("/me/todo")
+        @ResponseStatus(HttpStatus.OK)
+        public ListDto<TodoDetail> getTodo(Authentication authentication,
+                                           @RequestParam(required = false) LocalDate date) {
+                return userService.getMyTodo(
+                        (User) authentication.getPrincipal(),
+                        Objects.requireNonNullElseGet(date, LocalDate::now)
+                );
         }
 
         @GetMapping("/{userId}/town")

@@ -3,11 +3,7 @@ package SKKU.Dteam3.backend.service;
 import SKKU.Dteam3.backend.domain.*;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.oauth.KakaoApi;
-import SKKU.Dteam3.backend.repository.MemoRepository;
-import SKKU.Dteam3.backend.repository.TownMemberRepository;
-import SKKU.Dteam3.backend.repository.TownRepository;
-import SKKU.Dteam3.backend.repository.UserRepository;
-import SKKU.Dteam3.backend.repository.ResultRepository;
+import SKKU.Dteam3.backend.repository.*;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +27,8 @@ public class UserService {
     private final TownMemberRepository townMemberRepository;
 
     private final TownRepository townRepository;
+
+    private final TodoRepository todoRepository;
 
     private final ResultRepository resultRepository;
 
@@ -109,6 +103,18 @@ public class UserService {
             throw new IllegalArgumentException("타운 멤버가 아닙니다.");
         }
         return ListDto.createTowns(townRepository.findByUserId(userId));
+    }
+
+    public ListDto<TodoDetail> getTodo(Long userId, User user, LocalDate date) {
+        User userFound = validateUserId(userId);
+        if (!isSameTome(user, userFound)) {
+            throw new IllegalArgumentException("타운 멤버가 아닙니다.");
+        }
+        return ListDto.createTodoDetails(todoRepository.findDetailByUserIdAndDate(userFound, date));
+    }
+
+    public ListDto<TodoDetail> getMyTodo(User user, LocalDate date) {
+        return ListDto.createTodoDetails(todoRepository.findDetailByUserIdAndDate(user, date));
     }
 
     public AchieveResponseDto getAchieve(Long userId, User user, LocalDate date) {
