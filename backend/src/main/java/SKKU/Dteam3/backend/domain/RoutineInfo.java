@@ -30,40 +30,27 @@ public class RoutineInfo {
     private LocalDate endDate;
 
     @NotNull
-    private boolean mon;
+    private Boolean mon;
 
     @NotNull
-    private boolean tue;
+    private Boolean tue;
 
     @NotNull
-    private boolean wed;
+    private Boolean wed;
 
     @NotNull
-    private boolean thu;
+    private Boolean thu;
 
     @NotNull
-    private boolean fri;
+    private Boolean fri;
 
     @NotNull
-    private boolean sat;
+    private Boolean sat;
 
     @NotNull
-    private boolean sun;
+    private Boolean sun;
 
-    public RoutineInfo(LocalDate startDate, LocalDate endDate, boolean mon, boolean tue, boolean wed, boolean thu, boolean fri, boolean sat, boolean sun) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.mon = mon;
-        this.tue = tue;
-        this.wed = wed;
-        this.thu = thu;
-        this.fri = fri;
-        this.sat = sat;
-        this.sun = sun;
-    }
-
-    public RoutineInfo(Town town, LocalDate startDate, LocalDate endDate, boolean mon, boolean tue, boolean wed, boolean thu, boolean fri, boolean sat, boolean sun) {
-        this.town = town;
+    public RoutineInfo(LocalDate startDate, LocalDate endDate, Boolean mon, Boolean tue, Boolean wed, Boolean thu, Boolean fri, Boolean sat, Boolean sun) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.mon = mon;
