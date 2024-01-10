@@ -1,7 +1,8 @@
 package SKKU.Dteam3.backend.service;
 
-import SKKU.Dteam3.backend.Repository.RoutineInfoRepository;
-import SKKU.Dteam3.backend.Repository.TodoRepository;
+import SKKU.Dteam3.backend.repository.ResultRepository;
+import SKKU.Dteam3.backend.repository.RoutineInfoRepository;
+import SKKU.Dteam3.backend.repository.TodoRepository;
 import SKKU.Dteam3.backend.domain.*;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.repository.CheerRepository;

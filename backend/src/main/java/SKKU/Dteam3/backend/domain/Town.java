@@ -1,7 +1,9 @@
 package SKKU.Dteam3.backend.domain;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,8 +35,9 @@ public class Town {
     @NotNull
     private int memberNum;
 
-    @NotNull
-    private String inviteLink;
+    @Nullable
+    private String inviteLinkHash;
+
 
     public Town(User leader, String name, String description) {
         this.leader = leader;
@@ -42,10 +45,10 @@ public class Town {
         this.description = description;
         this.createdAt = LocalDateTime.now();
         this.memberNum = 1;
-        this.inviteLink = "null";//초대링크는 뒤에서 생성됨. 타운 아이디를 기반으로 만들어져야하기 떄문.
+        this.inviteLinkHash = "null";//초대링크는 뒤에서 생성됨. 타운 아이디를 기반으로 만들어져야하기 떄문.
     }
 
     public void createInviteLink(String inviteLink) {
-        this.inviteLink = inviteLink;
+        this.inviteLinkHash = inviteLink;
     }
 }

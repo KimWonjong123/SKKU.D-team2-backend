@@ -18,4 +18,5 @@ public interface TownRepository {
 
     List<Town> findAll();
 
+    Optional<Town> findByInviteLink(String inviteLink);
 }

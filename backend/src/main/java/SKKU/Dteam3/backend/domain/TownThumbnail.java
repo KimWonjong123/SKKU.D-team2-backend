@@ -25,6 +25,8 @@ public class TownThumbnail {
     @NotNull
     private String originalName;
 
+    @NotNull
+
     public TownThumbnail(Town town, String originalName) {
         this.town = town;
         this.originalName = originalName;

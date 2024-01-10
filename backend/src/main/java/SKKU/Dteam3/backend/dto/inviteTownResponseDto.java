@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ShowMyTownsResponseDto {
+public class inviteTownResponseDto {
 
     private Long townId;
+
+    private String LeaderName;
 
     private String name;
 
