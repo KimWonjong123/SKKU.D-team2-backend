@@ -159,6 +159,24 @@ public class UserService {
         return ListDto.createGuestbooks(guestbookRepository.findByUserAndDate(user, date));
     }
 
+    public ListDto<GuestbookResponseDto> saveOrUpdateGuestbook(Long userId, User user, GuestbookRequestDto requestDto) {
+        User userFound = validateUserId(userId);
+        if (!isSameTome(user, userFound)) {
+            throw new IllegalArgumentException("타운 멤버가 아닙니다.");
+        }
+        Guestbook guestbook;
+        Optional<Guestbook> guestbookOptional = guestbookRepository.findByWriter(user);
+        if (guestbookOptional.isPresent()) {
+            guestbook = guestbookOptional.get();
+            guestbook.updateGuestbook(requestDto.getContent(), requestDto.getPosition(), requestDto.getFont(), requestDto.getFontSize());
+            guestbookRepository.update(guestbook);
+        } else {
+            guestbook = new Guestbook(userFound, user, requestDto.getContent(), requestDto.getPosition(), requestDto.getFont(), requestDto.getFontSize());
+            guestbookRepository.save(guestbook);
+        }
+        return ListDto.createGuestbooks(guestbookRepository.findByUserAndDate(user, LocalDate.now()));
+    }
+
     private User validateUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {

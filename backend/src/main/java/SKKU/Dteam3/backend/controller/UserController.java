@@ -153,4 +153,16 @@ public class UserController {
                         Objects.requireNonNullElseGet(date, LocalDate::now)
                 );
         }
+
+        @PostMapping("/{userId}/guestbook")
+        @ResponseStatus(HttpStatus.CREATED)
+        public ListDto<GuestbookResponseDto> saveOrUpdateGuestbook(@PathVariable Long userId,
+                                                                   Authentication authentication,
+                                                                   @RequestBody GuestbookRequestDto requestDto) {
+                return userService.saveOrUpdateGuestbook(
+                        userId,
+                        (User) authentication.getPrincipal(),
+                        requestDto
+                );
+        }
 }

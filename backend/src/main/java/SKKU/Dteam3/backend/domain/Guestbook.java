@@ -60,4 +60,11 @@ public class Guestbook {
         this.font = "";
         this.fontSize = 0;
     }
+
+    public void updateGuestbook(String content, String position, String font, Integer fontSize) {
+        this.content = content;
+        this.position = position;
+        this.font = font;
+        this.fontSize = fontSize;
+    }
 }

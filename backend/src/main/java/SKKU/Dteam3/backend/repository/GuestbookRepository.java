@@ -36,4 +36,19 @@ public class GuestbookRepository {
                 .setParameter("tomorrow", date.plusDays(1))
                 .getResultList();
     }
+
+    public Optional<Guestbook> findByWriter(User writer) {
+        try {
+            Guestbook guestbook = em.createQuery(
+                    "select g " +
+                            "from Guestbook g " +
+                            "where g.user = :writer and g.date = :date", Guestbook.class)
+                    .setParameter("writer", writer)
+                    .setParameter("date", LocalDate.now())
+                    .getSingleResult();
+            return Optional.of(guestbook);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
 }
