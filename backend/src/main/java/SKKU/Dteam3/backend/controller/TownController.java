@@ -2,10 +2,7 @@ package SKKU.Dteam3.backend.controller;
 
 import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
-import SKKU.Dteam3.backend.dto.AddTownRequestDto;
-import SKKU.Dteam3.backend.dto.AddTownResponseDto;
-import SKKU.Dteam3.backend.dto.ShowMyTownResponseDto;
-import SKKU.Dteam3.backend.dto.ShowMyTownsResponseDto;
+import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.service.TownService;
 import SKKU.Dteam3.backend.service.TownThumbnailService;
 import jakarta.validation.Valid;
@@ -48,6 +45,7 @@ public class TownController {
         );
     }
     @GetMapping("/{townId}")
+    @ResponseStatus(HttpStatus.OK)
     public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long townId, Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.showMyTown(
@@ -57,9 +55,31 @@ public class TownController {
     }
 
     @GetMapping("/{townId}/image")
-    public Resource getTownThumbnail(@Valid @PathVariable Long townId, Authentication authentication){
+    @ResponseStatus(HttpStatus.CREATED)
+    public Resource getTownThumbnail(@Valid @PathVariable Long townId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.downloadTownThumbnail(townId, user);
+    }
+
+    @GetMapping("/{townId}/invitelink")
+    @ResponseStatus(HttpStatus.OK)
+    public String getInviteLink(@Valid @PathVariable Long townId, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.getInviteLinkHash(townId, user);
+    }
+
+    @PostMapping("/{townId}/invitelink")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String updateInviteLink(@Valid @PathVariable Long townId, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.updateInviteLinkHash(townId, user);
+    }
+
+    @GetMapping("/invitelink/{invitelink}")
+    @ResponseStatus(HttpStatus.OK)
+    public inviteTownResponseDto getInvitedTownInfo(@Valid @PathVariable(value = "invitelink")  String inviteLink, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.findTownByInviteLink(inviteLink, user);
     }
 
 }
