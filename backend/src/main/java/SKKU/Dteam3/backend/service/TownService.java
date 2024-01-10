@@ -16,7 +16,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +28,8 @@ public class TownService {
     private final TownThumbnailService townThumbnailService;
 
     private final TownMemberService townMemberService;
+
+    private final TodoService todoService;
 
     public List<ShowMyTownsResponseDto> showMyTowns(User user) {
         List<Town> allTown = townRepository.findByUserId(user.getId());
@@ -44,9 +45,24 @@ public class TownService {
     public AddTownResponseDto addTown(User user, AddTownRequestDto requestDto, MultipartFile thumbnailFile) {
         Town town = new Town(user, requestDto.getName(), requestDto.getDescription());
         town.createInviteLink(this.getURI(town.getId()));
-        townRepository.save(town);//TODO: 투두 저장하기
+        townRepository.save(town);
         townThumbnailService.addTownThumbnail(thumbnailFile, town);
         townMemberService.saveMemberShip(user,town);
+        for(AddTodoRequestDto todos : requestDto.getTownRoutine()){
+            todoService.addTodo(new AddTodoRequestDto(
+                    todos.getContent(),
+                    town.getDescription(),
+                    todos.getRoutine(),
+                    todos.getEndDate(),
+                    todos.getMon(),
+                    todos.getTue(),
+                    todos.getWed(),
+                    todos.getThu(),
+                    todos.getFri(),
+                    todos.getSat(),
+                    todos.getSun()
+            ),user);
+        }
         return new AddTownResponseDto(town.getInviteLinkHash(), town.getId());
 
 
@@ -71,7 +87,7 @@ public class TownService {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
-        //isMemberOfTown(user,town);
+        isMemberOfTown(user,town);
         return townThumbnailService.downloadTownThumbnail(townId);
     }
 

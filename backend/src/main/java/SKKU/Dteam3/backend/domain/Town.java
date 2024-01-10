@@ -35,7 +35,7 @@ public class Town {
     @NotNull
     private int memberNum;
 
-    @Nullable
+    @NotNull
     private String inviteLinkHash;
 
 

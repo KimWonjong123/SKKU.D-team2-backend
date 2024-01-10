@@ -14,6 +14,6 @@ public class AddTownRequestDto {
 
     private String description;
 
-    //private List<AddTodoRequestDto> townRoutine;
+    private List<AddTodoRequestDto> townRoutine;
 
 }

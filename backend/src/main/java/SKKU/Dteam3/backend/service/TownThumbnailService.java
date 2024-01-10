@@ -90,7 +90,7 @@ public class TownThumbnailService {
     }
 
     private String extractExt(String originalFilename) {
-        if(Arrays.stream(originalFilename.split(",")).count()!=2){
+        if(Arrays.stream(originalFilename.split("\\.")).count()!=2){
             throw new IllegalArgumentException("올바르지 않은 파일 이름입니다.");
         }
         int pos = originalFilename.lastIndexOf(".");
