@@ -31,6 +31,11 @@ public class TownRepositoryMem implements TownRepository {
     }
 
     @Override
+    public Optional<Town> findByInviteLink(String inviteLink) {
+        return Optional.empty();//구현 안되어 있음.
+    }
+
+    @Override
     public void save(Town town){
         store.put(town.getId(), town);
     }

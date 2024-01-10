@@ -36,7 +36,8 @@ public class Town {
     private int memberNum;
 
     @Nullable
-    private String inviteLink;
+    private String inviteLinkHash;
+
 
     public Town(User leader, String name, String description) {
         this.leader = leader;
@@ -44,10 +45,10 @@ public class Town {
         this.description = description;
         this.createdAt = LocalDateTime.now();
         this.memberNum = 1;
-        this.inviteLink = "null";//초대링크는 뒤에서 생성됨. 타운 아이디를 기반으로 만들어져야하기 떄문.
+        this.inviteLinkHash = "null";//초대링크는 뒤에서 생성됨. 타운 아이디를 기반으로 만들어져야하기 떄문.
     }
 
     public void createInviteLink(String inviteLink) {
-        this.inviteLink = inviteLink;
+        this.inviteLinkHash = inviteLink;
     }
 }
