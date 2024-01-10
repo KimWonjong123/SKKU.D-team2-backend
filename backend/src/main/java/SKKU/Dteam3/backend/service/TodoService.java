@@ -7,6 +7,7 @@ import SKKU.Dteam3.backend.domain.*;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.repository.CheerRepository;
 import SKKU.Dteam3.backend.repository.PokeRepository;
+import SKKU.Dteam3.backend.repository.ResultRepository;
 import SKKU.Dteam3.backend.repository.TownMemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -89,7 +90,7 @@ public class TodoService {
         );
         checkPermission(todo, user);
         validateDate(todo);
-        Result result = resultRepository.finyByTodo(
+        Result result = resultRepository.findByTodo(
                 todo
         ).orElseThrow(
                 () -> new IllegalArgumentException("해당 Todo에 해당하는 Result가 없습니다.")
@@ -107,7 +108,7 @@ public class TodoService {
         if (!user.getId().equals(todo.getUser().getId())) {
             throw new IllegalArgumentException("해당 Todo에 대한 권한이 없습니다.");
         }
-        Result result = resultRepository.finyByTodo(
+        Result result = resultRepository.findByTodo(
                 todo
         ).orElseThrow(
                 () -> new IllegalArgumentException("해당 Todo에 해당하는 Result가 없습니다.")
@@ -125,7 +126,7 @@ public class TodoService {
         if (todo.getRoutineInfo() != null) {
             routineInfoRepository.delete(todo.getRoutineInfo());
         }
-        Result result = resultRepository.finyByTodo(
+        Result result = resultRepository.findByTodo(
                 todo
         ).orElseThrow(
                 () -> new IllegalArgumentException("해당 Todo에 해당하는 Result가 없습니다.")
@@ -213,15 +214,6 @@ public class TodoService {
 
     private boolean isSameTome(User userA, User userB)
     {
-        List<TownMember> townMemberA = townMemberRepository.findByUserId(userA.getId());
-        List<TownMember> townMemberB = townMemberRepository.findByUserId(userB.getId());
-        for (TownMember memberA : townMemberA) {
-            for (TownMember memberB : townMemberB) {
-                if (memberA.getTown().getId().equals(memberB.getTown().getId())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return townMemberRepository.countByTwoUserId(userA.getId(), userB.getId()) > 0;
     }
 }

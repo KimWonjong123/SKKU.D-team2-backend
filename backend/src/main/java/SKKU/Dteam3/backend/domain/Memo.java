@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -22,7 +22,7 @@ public class Memo {
     private User user;
 
     @NotNull
-    private LocalDateTime date;
+    private LocalDate date;
 
     @NotNull
     private String content = "";
@@ -36,13 +36,30 @@ public class Memo {
     @NotNull
     private int fontSize;
 
-    public Memo(User user, String content, String position, String font, int fontSize) {
+    public Memo(User user, String content, String position, String font, Integer fontSize) {
         this.user = user;
+        this.date = LocalDate.now();
         this.content = content;
         this.position = position;
         this.font = font;
         this.fontSize = fontSize;
     }
 
+    public Memo(User user) {
+        this.user = user;
+        this.date = LocalDate.now();
+        this.content = "";
+        this.position = "";
+        this.font = "";
+        this.fontSize = 0;
+    }
+
     //비지니스 로직
+
+    public void update(String content, String position, String font, Integer fontSize) {
+        this.content = content;
+        this.position = position;
+        this.font = font;
+        this.fontSize = fontSize;
+    }
 }
