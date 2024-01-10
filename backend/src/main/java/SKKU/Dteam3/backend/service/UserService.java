@@ -3,11 +3,7 @@ package SKKU.Dteam3.backend.service;
 import SKKU.Dteam3.backend.domain.*;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.oauth.KakaoApi;
-import SKKU.Dteam3.backend.repository.MemoRepository;
-import SKKU.Dteam3.backend.repository.TownMemberRepository;
-import SKKU.Dteam3.backend.repository.TownRepository;
-import SKKU.Dteam3.backend.repository.UserRepository;
-import SKKU.Dteam3.backend.repository.ResultRepository;
+import SKKU.Dteam3.backend.repository.*;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -32,6 +28,8 @@ public class UserService {
 
     private final TownRepository townRepository;
 
+    private final TodoRepository todoRepository;
+
     private final ResultRepository resultRepository;
 
     private final KakaoApi kakaoApi;
@@ -44,7 +42,7 @@ public class UserService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (!user.getName().equals(kakaoProfile.getNickname())) {
-                user.changeName(kakaoAccount.getName());
+                user.changeName(kakaoProfile.getNickname());
                 userRepository.update(user);
             }
         } else {
@@ -99,25 +97,54 @@ public class UserService {
         return new MemoResponseDto(memo.getDate(), memo.getContent(), memo.getPosition(), memo.getFont(), memo.getFontSize());
     }
 
-    public List<Town> getTown(Long userId, User user) {
+    public ListDto<TownResponseDto> getTown(Long userId, User user) {
         User userFound = validateUserId(userId);
         if (!isSameTome(user, userFound)) {
             throw new IllegalArgumentException("타운 멤버가 아닙니다.");
         }
-        return townRepository.findByUserId(userId);
+        return ListDto.createTowns(townRepository.findByUserId(userId));
     }
 
-    public Integer getAchieve(Long userId, User user, LocalDate date) {
+    public ListDto<TodoDetail> getTodo(Long userId, User user, LocalDate date) {
         User userFound = validateUserId(userId);
         if (!isSameTome(user, userFound)) {
             throw new IllegalArgumentException("타운 멤버가 아닙니다.");
         }
-        return convertAchieve(resultRepository.calculateAchievementRateByUser(userFound, date.atStartOfDay()));
+        return ListDto.createTodoDetails(todoRepository.findDetailByUserIdAndDate(userFound, date));
     }
 
-    public Integer getMyAchieve(User user, LocalDate date) {
-        return convertAchieve(resultRepository.calculateAchievementRateByUser(user, date.atStartOfDay()));
+    public ListDto<TodoDetail> getMyTodo(User user, LocalDate date) {
+        return ListDto.createTodoDetails(todoRepository.findDetailByUserIdAndDate(user, date));
     }
+
+    public AchieveResponseDto getAchieve(Long userId, User user, LocalDate date) {
+        User userFound = validateUserId(userId);
+        if (!isSameTome(user, userFound)) {
+            throw new IllegalArgumentException("타운 멤버가 아닙니다.");
+        }
+        return new AchieveResponseDto(date, convertAchieve(resultRepository.calculateAchievementRateByUser(userFound, date.atStartOfDay())));
+    }
+
+    public AchieveResponseDto getMyAchieve(User user, LocalDate date) {
+        return new AchieveResponseDto(date, convertAchieve(resultRepository.calculateAchievementRateByUser(user, date.atStartOfDay())));
+    }
+
+    public ListDto<AchieveResponseDto> getCalendar(Long userId, User user, LocalDate date) {
+        User userFound = validateUserId(userId);
+        if (!isSameTome(user, userFound)) {
+            throw new IllegalArgumentException("타운 멤버가 아닙니다.");
+        }
+        LocalDateTime start = date.plusDays(-date.getDayOfMonth() + 1).atStartOfDay();
+        LocalDateTime end = date.plusDays(-date.getDayOfMonth() + 1).plusMonths(1).atStartOfDay();
+        return ListDto.createAchieves(resultRepository.calculateMonthAchievementRateByUser(user, start, end).stream().toList());
+    }
+
+    public ListDto<AchieveResponseDto> getMyCalendar(User user, LocalDate date) {
+        LocalDateTime start = date.plusDays(-date.getDayOfMonth() + 1).atStartOfDay();
+        LocalDateTime end = date.plusDays(-date.getDayOfMonth() + 1).plusMonths(1).atStartOfDay();
+        return ListDto.createAchieves(resultRepository.calculateMonthAchievementRateByUser(user, start, end).stream().toList());
+    }
+
 
     private User validateUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
