@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class GuestBook {
+public class Guestbook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,7 +37,7 @@ public class GuestBook {
     @NotNull
     private int fontSize;
 
-    public GuestBook(User user, String content, String position, String font, int fontSize) {
+    public Guestbook(User user, String content, String position, String font, int fontSize) {
         this.user = user;
         this.date = LocalDate.now();
         this.content = content;
@@ -46,7 +46,7 @@ public class GuestBook {
         this.fontSize = fontSize;
     }
 
-    public GuestBook(User user) {
+    public Guestbook(User user) {
         this.user = user;
         this.date = LocalDate.now();
         this.content = "";
