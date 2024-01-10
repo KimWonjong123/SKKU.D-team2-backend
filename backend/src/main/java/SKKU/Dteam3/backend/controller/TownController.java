@@ -6,30 +6,30 @@ import SKKU.Dteam3.backend.dto.AddTownRequestDto;
 import SKKU.Dteam3.backend.dto.AddTownResponseDto;
 import SKKU.Dteam3.backend.dto.ShowMyTownResponseDto;
 import SKKU.Dteam3.backend.dto.ShowMyTownsResponseDto;
-import SKKU.Dteam3.backend.repository.TownRepository;
 import SKKU.Dteam3.backend.service.TownService;
+import SKKU.Dteam3.backend.service.TownThumbnailService;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/town")
 @RequiredArgsConstructor
 public class TownController {
 
     private final TownService townService;
 
+    private final TownThumbnailService townThumbnailService;
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public List<ShowMyTownsResponseDto> showMyTowns(@Valid Authentication authentication){
+    public List<ShowMyTownsResponseDto> showMyTowns(Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.showMyTowns(user);
     }
@@ -37,31 +37,29 @@ public class TownController {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public AddTownResponseDto addTown (@Valid @RequestBody AddTownRequestDto requestDto, Authentication authentication){
+    public AddTownResponseDto addTown (@RequestPart(value = "dto") AddTownRequestDto requestDto,
+                                       @RequestPart(value = "file") MultipartFile thumbnailFile,
+                                       Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.addTown(
                 user,
-                requestDto
+                requestDto,
+                thumbnailFile
         );
     }
     @GetMapping("/{townId}")
-    public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long id, @RequestBody Authentication authentication){
+    public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long townId, Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return townService.showMyTown(
                 user,
-                id
+                townId
         );
     }
 
-    @PostMapping("/modify/{townId}")
-    public String modifyTown(@PathVariable Long townId, @ModelAttribute Town town){
-        //townRepository.save(town);
-        return "town/my/{townId}";
-    }
-
-    @PostMapping("/my/{townId}/leave")
-    public String leaveTown(@PathVariable Long townId, Model model){
-        return "town";
+    @GetMapping("/{townId}/image")
+    public Resource getTownThumbnail(@Valid @PathVariable Long townId, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.downloadTownThumbnail(townId, user);
     }
 
 }

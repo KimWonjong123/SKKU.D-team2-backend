@@ -12,9 +12,8 @@ public class AddTownRequestDto {
 
     private String name;
 
-    private String thumbnailName;
-
     private String description;
 
-    private List<AddTodoRequestDto> townRoutine;
+    //private List<AddTodoRequestDto> townRoutine;
+
 }

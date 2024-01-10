@@ -1,7 +1,9 @@
 package SKKU.Dteam3.backend.domain;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +35,7 @@ public class Town {
     @NotNull
     private int memberNum;
 
-    @NotNull
+    @Nullable
     private String inviteLink;
 
     public Town(User leader, String name, String description) {
