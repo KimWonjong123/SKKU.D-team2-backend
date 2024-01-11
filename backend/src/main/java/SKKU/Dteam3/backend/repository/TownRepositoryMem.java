@@ -36,6 +36,11 @@ public class TownRepositoryMem implements TownRepository {
     }
 
     @Override
+    public void delete(Town town) {
+
+    }
+
+    @Override
     public void save(Town town){
         store.put(town.getId(), town);
     }

@@ -14,4 +14,8 @@ public class ShowMyTownsResponseDto {
 
     private String name;
 
+    public ShowMyTownsResponseDto(Town town) {
+        this.townId = town.getId();
+        this.name = town.getName();
+    }
 }

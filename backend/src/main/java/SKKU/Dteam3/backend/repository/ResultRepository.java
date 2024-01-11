@@ -79,4 +79,22 @@ public class ResultRepository {
                 ((Date) objects[0]).toLocalDate(),
                 (int) Math.floor(((float) objects[1]) * 5) * 20)).toList();
     }
+
+    public Integer calculateMonthTownAchievementRateByUser(User user, Long townId, LocalDateTime start, LocalDateTime end) {
+        Query query = em.createQuery("select(date(function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00')), " +
+                "sum(case when r.isDone = true then 1 else 0 end) * 1.0 / count(r)) " +
+                "from Result r join Todo t on t.id = r.todo.id join RoutineInfo ri on ri.town.id = :townId" +
+                "where r.user = :user and t.createdAt between :startDate and :endDate " +
+                "group by date(function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00')) " +
+                "order by date(function('CONVERT_TZ', t.createdAt, '+00:00', '+09:00'))");
+        query.setParameter("user", user);
+        query.setParameter("startDate", start);
+        query.setParameter("endDate", end);
+        query.setParameter("townId",townId);
+        List<Object[]> resultList = query.getResultList();
+        List<AchievementRate> achievementRateList = resultList.stream().map(objects -> new AchievementRate(
+                ((Date) objects[0]).toLocalDate(),
+                (int) Math.floor(((float) objects[1]) * 5) * 20)).toList();
+        return (int)Math.floor((float)(achievementRateList.stream().mapToInt(AchievementRate::getAchievementRate).sum()/(100*achievementRateList.size()))*5)*20;
+    }
 }

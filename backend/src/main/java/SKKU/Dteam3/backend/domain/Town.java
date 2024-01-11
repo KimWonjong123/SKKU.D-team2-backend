@@ -38,7 +38,7 @@ public class Town {
     @NotNull
     private int memberNum;
 
-    @Nullable
+    @NotNull
     private String inviteLinkHash;
 
 
@@ -53,5 +53,18 @@ public class Town {
 
     public void createInviteLink(String inviteLink) {
         this.inviteLinkHash = inviteLink;
+    }
+
+    public void updateTownInfo(String name, String description){
+        this.name = name;
+        this.description = description;
+    }
+
+    public void increaseMemberNum() {
+        this.memberNum++;
+    }
+
+    public void decreaseMemberNum() {
+        this.memberNum--;
     }
 }

@@ -1,5 +1,6 @@
 package SKKU.Dteam3.backend.domain;
 
+import SKKU.Dteam3.backend.dto.AddTodoRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -44,5 +45,9 @@ public class Todo {
         this.todoClass = todoClass;
         this.user = user;
         this.routineInfo = routineInfo;
+    }
+
+    public void modifyTodo(AddTodoRequestDto requestDto) {
+        this.content = requestDto.getContent();
     }
 }

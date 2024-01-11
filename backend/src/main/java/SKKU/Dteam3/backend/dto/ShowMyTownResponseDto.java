@@ -1,9 +1,8 @@
 package SKKU.Dteam3.backend.dto;
 
+import SKKU.Dteam3.backend.domain.TodoDetail;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -17,5 +16,5 @@ public class ShowMyTownResponseDto {
 
     private String leader;
 
-    private List<AddTodoResponseDto> routineInfoList; //TODO : 투두 조회용으로는 안될 것 같음.
+    private ListDto<TownTodoInfoDto> routineInfoList;
 }

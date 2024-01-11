@@ -50,4 +50,10 @@ public class TownMemberRepository {
                 .getSingleResult();
     }
 
+    public Optional<TownMember> findByTownAndUser(Long townId, Long userId) {
+        return Optional.ofNullable(em.createQuery("select m from TownMember m where m.user.id = :userId and m.town.id = :townId", TownMember.class)
+                .setParameter("userId", userId)
+                .setParameter("townId", townId)
+                .getSingleResult());
+    }
 }
