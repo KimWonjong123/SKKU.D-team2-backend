@@ -198,6 +198,14 @@ public class TownService {
         townMemberService.removeMemberShip(townId, userId);
         deleteTownTodo(user, town);
     }
+    public void leaveMember(User user, Long townId) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isMemberOfTown(user, town);
+        townMemberService.removeMemberShip(townId,user.getId());
+        deleteTownTodo(user,town);
+    }
 
     private void deleteTownTodo(User user, Town town) {
         todoService.deleteUserTownTodo(user, town);

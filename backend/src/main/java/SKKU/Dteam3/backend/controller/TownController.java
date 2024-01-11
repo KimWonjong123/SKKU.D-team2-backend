@@ -129,6 +129,6 @@ public class TownController {
         townService.leaveMember(
                 user,
                 townId
-        )
+        );
     }
 }
