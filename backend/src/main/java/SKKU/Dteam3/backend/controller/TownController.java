@@ -180,6 +180,20 @@ public class TownController {
         return townService.modifyTownTodo(
                 todoId,
                 requestDto
+                ,user
+        );
+    }
+
+    @DeleteMapping("/{townId}/todo/{todoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public deleteTownTodoResponseDto deleteTownTodo(@Valid @PathVariable Long townId,
+                                                    @PathVariable Long todoId,
+                                                    Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.deleteTownTodo(
+                townId,
+                todoId,
+                user
         );
     }
 }

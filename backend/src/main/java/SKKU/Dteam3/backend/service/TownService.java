@@ -257,15 +257,28 @@ public class TownService {
         return new AddTownTodoResponseDto(addTodoResponseDto.getCreatedAt(), addTodoResponseDto.getId());
     }
 
-    public modifyTownTodoResponseDto modifyTownTodo(Long todoId, AddTodoRequestDto requestDto) {
+    public modifyTownTodoResponseDto modifyTownTodo(Long todoId, AddTodoRequestDto requestDto, User user) {
         Todo todo = todoRepository.findById(todoId).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 투두가 없습니다.")
         );
+        isOwnedByUser(user, todo);
         todo.modifyTodo(requestDto);
         todoRepository.update(todo);
         return new modifyTownTodoResponseDto(LocalDateTime.now(), todo.getId());
     }
 
+    public deleteTownTodoResponseDto deleteTownTodo(Long townId, Long todoId, User user) {
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                () -> new IllegalArgumentException("해당하는 투두가 없습니다.")
+        );
+        isOwnedByUser(user, todo);
+        todoService.deleteTodo(todo.getId(), user);
+        return new deleteTownTodoResponseDto(todo.getId());
+    }
+
+    private Boolean isOwnedByUser(User user, Todo todo) {
+        return todo.getUser().getId().equals(user.getId());
+    }
     private void deleteTownTodo(User user, Town town) {
         todoService.deleteUserTownTodo(user, town);
     }
