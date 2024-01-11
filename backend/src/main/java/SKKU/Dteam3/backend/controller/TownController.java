@@ -4,6 +4,7 @@ import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.service.TownService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,9 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/town")
@@ -130,5 +133,18 @@ public class TownController {
                 user,
                 townId
         ),user.getId());
+    }
+
+    @GetMapping("/{townId}/achieve/members")
+    @ResponseStatus(HttpStatus.OK)
+    public memberAchieveListResponseDto getMemberAchieveList(@Valid @PathVariable Long townId,
+                                                             Authentication authentication,
+                                                             @RequestParam(required = false) @PastOrPresent LocalDate date){
+        User user = (User) authentication.getPrincipal();
+        return townService.getMemberAchieveList(
+                user,
+                townId,
+                Objects.requireNonNullElseGet(date, LocalDate::now)
+        );
     }
 }

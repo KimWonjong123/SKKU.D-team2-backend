@@ -153,6 +153,11 @@ public class TodoService {
                     routineInfo);
             routineInfoRepository.save(todo.getRoutineInfo());
             todoRepository.save(todo);
+            Result result = new Result(
+                    user,
+                    todo
+            );
+            resultRepository.save(result);
         }catch (NullPointerException e){
             throw new IllegalArgumentException("루틴 상세 정보가 누락되었습니다.");
         }
@@ -162,6 +167,9 @@ public class TodoService {
         List<Todo> todoList = todoRepository.findTodosByTownId(town.getId(), user.getId());
         for(Todo todo : todoList){
             routineInfoRepository.delete(todo.getRoutineInfo());
+            Result findResult = resultRepository.findByTodo(todo).orElseThrow(
+                    () -> new RuntimeException("성과가 존재하지 않습니다."));
+            resultRepository.delete(findResult);
             todoRepository.delete(todo);
         }
         for(AddTodoRequestDto dto : requestDto){
@@ -184,6 +192,11 @@ public class TodoService {
                         routineInfo);
                 routineInfoRepository.save(todo.getRoutineInfo());
                 todoRepository.save(todo);
+                Result result = new Result(
+                        user,
+                        todo
+                );
+                resultRepository.save(result);
             } catch (NullPointerException e) {
                 throw new IllegalArgumentException("루틴 상세 정보가 누락되었습니다.");
             }

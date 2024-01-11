@@ -4,6 +4,7 @@ import SKKU.Dteam3.backend.domain.Todo;
 import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
+import SKKU.Dteam3.backend.repository.ResultRepository;
 import SKKU.Dteam3.backend.repository.TodoRepository;
 import SKKU.Dteam3.backend.repository.TownRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +36,8 @@ public class TownService {
     private final TodoService todoService;
 
     private final TodoRepository todoRepository;
+
+    private final ResultRepository resultRepository;
 
     public List<ShowMyTownsResponseDto> showMyTowns(User user) {
         List<Town> allTown = townRepository.findByUserId(user.getId());
@@ -208,6 +212,34 @@ public class TownService {
         townMemberService.removeMemberShip(townId,user.getId());
         deleteTownTodo(user,town);
         return true;
+    }
+
+    public memberAchieveListResponseDto getMemberAchieveList(User user, Long townId, LocalDate date) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isMemberOfTown(user, town);
+        List<User> userList = townMemberService.findMembersByTownId(townId, town.getLeader().getId());
+        List<memberAchieveResponseDto> achieveList = new ArrayList<>();
+        for(User users : userList){
+            LocalDateTime start = date.plusDays(-date.getDayOfMonth() + 1).atStartOfDay();
+            LocalDateTime end = date.plusDays(-date.getDayOfMonth() + 1).plusMonths(1).atStartOfDay();
+            achieveList.add(new memberAchieveResponseDto(
+                    user.getId(),
+                    user.getName(),
+                    resultRepository.calculateMonthTownAchievementRateByUser(
+                            user,
+                            townId,
+                            start,
+                            end
+                        )
+                    )
+            );
+        }
+        return new memberAchieveListResponseDto(
+                townId,
+                achieveList
+        );
     }
 
     private void deleteTownTodo(User user, Town town) {
