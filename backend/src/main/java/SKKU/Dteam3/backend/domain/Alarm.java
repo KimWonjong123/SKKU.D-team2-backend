@@ -1,5 +1,6 @@
 package SKKU.Dteam3.backend.domain;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -28,6 +29,12 @@ public class Alarm {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "from_user_id")
     private User fromUser;
+
+    @NotNull
+    private Boolean isTown;
+
+    @Nullable
+    private String townName;
 
     @NotNull
     private String content;
