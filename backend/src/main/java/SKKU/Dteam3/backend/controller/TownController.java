@@ -160,4 +160,40 @@ public class TownController {
                 Objects.requireNonNullElseGet(date, LocalDate::now)
         );
     }
+
+    @PostMapping("/{townId}/todo")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AddTownTodoResponseDto addTownTodo(@Valid @PathVariable Long townId,
+                                              @RequestBody AddTodoRequestDto requestDto,
+                                              Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.addTownTodo(townId, user, requestDto);
+    }
+
+    @PostMapping("/{townId}/todo/{todoId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public modifyTownTodoResponseDto modifyTownTodo(@Valid @PathVariable Long townId,
+                                                    @PathVariable Long todoId,
+                                                    @RequestBody AddTodoRequestDto requestDto,
+                                                    Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.modifyTownTodo(
+                todoId,
+                requestDto
+                ,user
+        );
+    }
+
+    @DeleteMapping("/{townId}/todo/{todoId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public deleteTownTodoResponseDto deleteTownTodo(@Valid @PathVariable Long townId,
+                                                    @PathVariable Long todoId,
+                                                    Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return townService.deleteTownTodo(
+                townId,
+                todoId,
+                user
+        );
+    }
 }

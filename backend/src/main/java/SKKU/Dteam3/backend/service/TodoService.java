@@ -112,11 +112,24 @@ public class TodoService {
             }
         } else {
             // 루틴이 아닐 경우 -> 개인추가 타운투두이다.
+            RoutineInfo routineInfo = new RoutineInfo(
+                    town,
+                    LocalDate.now(),
+                    LocalDate.now(),
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+            );
+            routineInfoRepository.save(routineInfo);
             todo = new Todo(
                     requestDto.getContent(),
                     requestDto.getTodoClass(),
                     user,
-                    null
+                    routineInfo
             );
             todoRepository.save(todo);
         }
