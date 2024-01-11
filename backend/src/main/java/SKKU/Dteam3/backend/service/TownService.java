@@ -191,21 +191,23 @@ public class TownService {
         return new joinTownResponseDto(town.getId(), LocalDateTime.now());
     }
 
-    public void expelMember(User user, Long townId, Long userId) {
+    public Boolean expelMember(User user, Long townId, Long userId) {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
         isLeaderOfTown(user,town);
         townMemberService.removeMemberShip(townId, userId);
         deleteTownTodo(user, town);
+        return true;
     }
-    public void leaveMember(User user, Long townId) {
+    public Boolean leaveMember(User user, Long townId) {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
         isMemberOfTown(user, town);
         townMemberService.removeMemberShip(townId,user.getId());
         deleteTownTodo(user,town);
+        return true;
     }
 
     private void deleteTownTodo(User user, Town town) {

@@ -113,22 +113,22 @@ public class TownController {
 
     @DeleteMapping("/{townId}/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void expelMember(@Valid @PathVariable Long townId, @PathVariable Long userId, Authentication authentication){
+    public removeMemberResponseDto expelMember(@Valid @PathVariable Long townId, @PathVariable Long userId, Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        townService.expelMember(
+        return new removeMemberResponseDto(townService.expelMember(
                 user,
                 townId,
                 userId
-        );
+        ), user.getId());
     }
 
     @PatchMapping("/{townId}")
     @ResponseStatus(HttpStatus.OK)
-    public void leaveMember(@Valid @PathVariable Long townId, Authentication authentication){
+    public removeMemberResponseDto leaveMember(@Valid @PathVariable Long townId, Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        townService.leaveMember(
+        return new removeMemberResponseDto(townService.leaveMember(
                 user,
                 townId
-        );
+        ),user.getId());
     }
 }
