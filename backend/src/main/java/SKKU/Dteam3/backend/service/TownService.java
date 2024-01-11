@@ -248,6 +248,24 @@ public class TownService {
         );
     }
 
+    public AddTownTodoResponseDto addTownTodo(Long townId, User user, AddTodoRequestDto requestDto) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isMemberOfTown(user, town);
+        AddTodoResponseDto addTodoResponseDto = todoService.addTownTodo(requestDto, user, town);
+        return new AddTownTodoResponseDto(addTodoResponseDto.getCreatedAt(), addTodoResponseDto.getId());
+    }
+
+    public modifyTownTodoResponseDto modifyTownTodo(Long todoId, AddTodoRequestDto requestDto) {
+        Todo todo = todoRepository.findById(todoId).orElseThrow(
+                () -> new IllegalArgumentException("해당하는 투두가 없습니다.")
+        );
+        todo.modifyTodo(requestDto);
+        todoRepository.update(todo);
+        return new modifyTownTodoResponseDto(LocalDateTime.now(), todo.getId());
+    }
+
     private void deleteTownTodo(User user, Town town) {
         todoService.deleteUserTownTodo(user, town);
     }

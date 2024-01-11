@@ -78,7 +78,8 @@ public class TodoRepository {
 
     public List<Todo> findTodosByTownId(Long townId, Long userId) {
          return em.createQuery("SELECT t FROM Todo t LEFT JOIN FETCH RoutineInfo " +
-                         "ro on t.routineInfo.id = ro.id WHERE ro.town.id = :id AND t.user.id = :userId",Todo.class)
+                         "ro on t.routineInfo.id = ro.id WHERE ro.town.id = :id AND t.user.id = :userId " +
+                         "AND ro.startDate != ro.endDate",Todo.class)
                 .setParameter("id",townId)
                 .setParameter("userId",userId)
                  .getResultList();
