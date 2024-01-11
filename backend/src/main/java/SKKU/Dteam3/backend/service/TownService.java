@@ -4,6 +4,7 @@ import SKKU.Dteam3.backend.domain.Todo;
 import SKKU.Dteam3.backend.domain.Town;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
+import SKKU.Dteam3.backend.repository.ResultRepository;
 import SKKU.Dteam3.backend.repository.TodoRepository;
 import SKKU.Dteam3.backend.repository.TownRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,8 @@ public class TownService {
 
     private final TodoRepository todoRepository;
 
+    private final ResultRepository resultRepository;
+
     public List<ShowMyTownsResponseDto> showMyTowns(User user) {
         List<Town> allTown = townRepository.findByUserId(user.getId());
         List<ShowMyTownsResponseDto> towns = new ArrayList<>();
@@ -52,19 +56,19 @@ public class TownService {
         townRepository.save(town);
         townThumbnailService.addTownThumbnail(thumbnailFile, town);
         townMemberService.saveMemberShip(user,town);
-        for(AddTodoRequestDto todos : requestDto.getTownRoutine()){
+        for(AddTodoRequestDto dto : requestDto.getTownRoutine()){
             todoService.addTownTodo(new AddTodoRequestDto(
-                    todos.getContent(),
+                    dto.getContent(),
                     town.getDescription(),
                     true,
-                    todos.getEndDate(),
-                    todos.getMon(),
-                    todos.getTue(),
-                    todos.getWed(),
-                    todos.getThu(),
-                    todos.getFri(),
-                    todos.getSat(),
-                    todos.getSun()
+                    dto.getEndDate(),
+                    dto.getMon(),
+                    dto.getTue(),
+                    dto.getWed(),
+                    dto.getThu(),
+                    dto.getFri(),
+                    dto.getSat(),
+                    dto.getSun()
             ),user, town);
         }
         return new AddTownResponseDto(town.getInviteLinkHash(), town.getId());
@@ -113,7 +117,7 @@ public class TownService {
     }
 
 
-    public void deleteTown(User user, Long townId) {
+    public deleteMyTownResponseDto deleteTown(User user, Long townId) {
         Town town = townRepository.findByTownId(townId).orElseThrow(
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
@@ -122,6 +126,7 @@ public class TownService {
         townMemberService.removeMemberShip(townId);
         todoService.removeTownTodo(townId);
         townRepository.delete(town);
+        return new deleteMyTownResponseDto(true, town.getId());
     }
 
     public Resource downloadTownThumbnail(Long townId, User user) {
@@ -158,6 +163,93 @@ public class TownService {
                 town.getLeader().getName(),
                 town.getName()
         );
+    }
+
+    public joinTownResponseDto joinTown(String inviteLink, User user) {
+        Town town = townRepository.findByInviteLink(inviteLink).orElseThrow(
+                () -> new IllegalArgumentException("유효하지 않은 초대링크입니다."));
+        isNotMemberOfTown(user,town);
+        if(!townMemberService.saveMemberShip(user,town).equals(user.getId())){
+            throw new RuntimeException("타운 멤버 저장에 실패하였습니다");
+        }
+        town.increaseMemberNum();
+        townRepository.update(town);
+        List<User> users =new ArrayList<>();
+        users.add(user);
+        List<AddTodoRequestDto> requestDtoList = todoService.getTownTodo(town);
+        for(AddTodoRequestDto dto : requestDtoList){
+            todoService.addTownTodo(new AddTodoRequestDto(
+                    dto.getContent(),
+                    town.getDescription(),
+                    true,
+                    dto.getEndDate(),
+                    dto.getMon(),
+                    dto.getTue(),
+                    dto.getWed(),
+                    dto.getThu(),
+                    dto.getFri(),
+                    dto.getSat(),
+                    dto.getSun()
+            ),user, town);
+        }
+        return new joinTownResponseDto(town.getId(), LocalDateTime.now());
+    }
+
+    public Boolean expelMember(User user, Long townId, Long userId) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isLeaderOfTown(user,town);
+        townMemberService.removeMemberShip(townId, userId);
+        deleteTownTodo(user, town);
+        return true;
+    }
+    public Boolean leaveMember(User user, Long townId) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isMemberOfTown(user, town);
+        townMemberService.removeMemberShip(townId,user.getId());
+        deleteTownTodo(user,town);
+        return true;
+    }
+
+    public memberAchieveListResponseDto getMemberAchieveList(User user, Long townId, LocalDate date) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isMemberOfTown(user, town);
+        List<User> userList = townMemberService.findMembersByTownId(townId, town.getLeader().getId());
+        List<memberAchieveResponseDto> achieveList = new ArrayList<>();
+        for(User users : userList){
+            LocalDateTime start = date.plusDays(-date.getDayOfMonth() + 1).atStartOfDay();
+            LocalDateTime end = date.plusDays(-date.getDayOfMonth() + 1).plusMonths(1).atStartOfDay();
+            achieveList.add(new memberAchieveResponseDto(
+                    user.getId(),
+                    user.getName(),
+                    resultRepository.calculateMonthTownAchievementRateByUser(
+                            user,
+                            townId,
+                            start,
+                            end
+                        )
+                    )
+            );
+        }
+        return new memberAchieveListResponseDto(
+                townId,
+                achieveList
+        );
+    }
+    public TownAchieveResponseDto getTownAchieve(User user, Long townId, LocalDate localDate) {
+        memberAchieveListResponseDto memberAchieveList = getMemberAchieveList(user, townId, localDate);
+        return new TownAchieveResponseDto(memberAchieveList.getTownId(),
+                memberAchieveList.getMembers().stream().mapToInt(memberAchieveResponseDto::getAchieve).sum()/memberAchieveList.getMembers().size()
+        );
+    }
+
+    private void deleteTownTodo(User user, Town town) {
+        todoService.deleteUserTownTodo(user, town);
     }
 
     private void isLeaderOfTown(User user, Town town) {

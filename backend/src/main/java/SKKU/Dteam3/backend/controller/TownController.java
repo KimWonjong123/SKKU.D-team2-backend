@@ -4,6 +4,7 @@ import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.service.TownService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,9 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/town")
@@ -24,7 +27,7 @@ public class TownController {
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public ListDto<ShowMyTownsResponseDto> showMyTowns(Authentication authentication){
+    public ListDto<ShowMyTownsResponseDto> showMyTowns(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return ListDto.createTownList(townService.showMyTowns(user));
     }
@@ -32,9 +35,9 @@ public class TownController {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public AddTownResponseDto addTown (@RequestPart(value = "dto") AddTownRequestDto requestDto,
-                                       @RequestPart(value = "file") MultipartFile thumbnailFile,
-                                       Authentication authentication){
+    public AddTownResponseDto addTown(@RequestPart(value = "dto") AddTownRequestDto requestDto,
+                                      @RequestPart(value = "file") MultipartFile thumbnailFile,
+                                      Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.addTown(
                 user,
@@ -42,9 +45,10 @@ public class TownController {
                 thumbnailFile
         );
     }
+
     @GetMapping("/{townId}")
     @ResponseStatus(HttpStatus.OK)
-    public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long townId, Authentication authentication){
+    public ShowMyTownResponseDto showMyTown(@Valid @PathVariable Long townId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.showMyTown(
                 user,
@@ -55,7 +59,7 @@ public class TownController {
     @PostMapping("/{townId}")
     @ResponseStatus(HttpStatus.CREATED)
     public ModifyMyTownResponseDto modifyMyTown(@Valid @PathVariable Long townId,
-                                                @RequestBody AddTownRequestDto requestDto, Authentication authentication){
+                                                @RequestBody AddTownRequestDto requestDto, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.modifyMyTown(
                 user,
@@ -66,10 +70,10 @@ public class TownController {
 
     @DeleteMapping("/{townId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMyTown(@Valid @PathVariable Long townId,
-                             Authentication authentication){
+    public deleteMyTownResponseDto deleteMyTown(@Valid @PathVariable Long townId,
+                             Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        townService.deleteTown(user,townId);
+        return townService.deleteTown(user, townId);
     }
 
     @GetMapping("/{townId}/image")
@@ -81,24 +85,79 @@ public class TownController {
 
     @GetMapping("/{townId}/invitelink")
     @ResponseStatus(HttpStatus.OK)
-    public String getInviteLink(@Valid @PathVariable Long townId, Authentication authentication){
+    public InviteLinkHashResponseDto getInviteLink(@Valid @PathVariable Long townId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return townService.getInviteLinkHash(townId, user);
+        return new InviteLinkHashResponseDto(townService.getInviteLinkHash(townId, user));
     }
 
     @PostMapping("/{townId}/invitelink")
     @ResponseStatus(HttpStatus.CREATED)
-    public String updateInviteLink(@Valid @PathVariable Long townId, Authentication authentication){
+    public InviteLinkHashResponseDto updateInviteLink(@Valid @PathVariable Long townId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return townService.updateInviteLinkHash(townId, user);
+        return new InviteLinkHashResponseDto(townService.updateInviteLinkHash(townId, user));
     }
 
     @GetMapping("/invitelink/{invitelink}")
     @ResponseStatus(HttpStatus.OK)
-    public inviteTownResponseDto getInvitedTownInfo(@Valid @PathVariable(value = "invitelink")  String inviteLink, Authentication authentication){
+    public inviteTownResponseDto getInvitedTownInfo(@Valid @PathVariable(value = "invitelink") String inviteLink, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.findTownByInviteLink(inviteLink, user);
     }
 
+    @PostMapping("/invitelink/{invitelink}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public joinTownResponseDto joinTown(@Valid @PathVariable(value = "invitelink") String inviteLink, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return townService.joinTown(
+                inviteLink,
+                user
+        );
+    }
 
+    @DeleteMapping("/{townId}/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public removeMemberResponseDto expelMember(@Valid @PathVariable Long townId, @PathVariable Long userId, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return new removeMemberResponseDto(townService.expelMember(
+                user,
+                townId,
+                userId
+        ), user.getId());
+    }
+
+    @PatchMapping("/{townId}")
+    @ResponseStatus(HttpStatus.OK)
+    public removeMemberResponseDto leaveMember(@Valid @PathVariable Long townId, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return new removeMemberResponseDto(townService.leaveMember(
+                user,
+                townId
+        ),user.getId());
+    }
+
+    @GetMapping("/{townId}/achieve/members")
+    @ResponseStatus(HttpStatus.OK)
+    public memberAchieveListResponseDto getMemberAchieveList(@Valid @PathVariable Long townId,
+                                                             Authentication authentication,
+                                                             @RequestParam(required = false) @PastOrPresent LocalDate date){
+        User user = (User) authentication.getPrincipal();
+        return townService.getMemberAchieveList(
+                user,
+                townId,
+                Objects.requireNonNullElseGet(date, LocalDate::now)
+        );
+    }
+
+    @GetMapping("/{townId}/achieve/total")
+    @ResponseStatus(HttpStatus.OK)
+    public TownAchieveResponseDto getTownAchieve(@Valid @PathVariable Long townId,
+                                                             Authentication authentication,
+                                                             @RequestParam(required = false) @PastOrPresent LocalDate date){
+        User user = (User) authentication.getPrincipal();
+        return townService.getTownAchieve(
+                user,
+                townId,
+                Objects.requireNonNullElseGet(date, LocalDate::now)
+        );
+    }
 }

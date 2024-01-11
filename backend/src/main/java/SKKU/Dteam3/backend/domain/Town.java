@@ -56,4 +56,12 @@ public class Town {
         this.name = name;
         this.description = description;
     }
+
+    public void increaseMemberNum() {
+        this.memberNum++;
+    }
+
+    public void decreaseMemberNum() {
+        this.memberNum--;
+    }
 }
