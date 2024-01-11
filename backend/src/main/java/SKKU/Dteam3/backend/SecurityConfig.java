@@ -21,7 +21,7 @@ public class SecurityConfig {
 
     private final AuthenticationEntryPoint entryPoint;
 
-        @Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf(
@@ -29,7 +29,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
-                                .requestMatchers("/oauth/**").permitAll()
+                                .requestMatchers("/oauth/callback/*").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(

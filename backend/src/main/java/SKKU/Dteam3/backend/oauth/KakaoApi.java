@@ -1,5 +1,6 @@
 package SKKU.Dteam3.backend.oauth;
 
+import SKKU.Dteam3.backend.dto.KakaoLeaveResponse;
 import SKKU.Dteam3.backend.dto.KakaoTokenInfoResponse;
 import SKKU.Dteam3.backend.dto.KakaoTokenResponse;
 import SKKU.Dteam3.backend.dto.KakaoUserInfoResponse;
@@ -58,6 +59,17 @@ public class KakaoApi {
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .bodyToFlux(KakaoUserInfoResponse.class);
+
+        return response.blockFirst();
+    }
+
+    public KakaoLeaveResponse leave(Long userId, String token) {
+        Flux<KakaoLeaveResponse> response = webClient.post()
+                .uri("https://kapi.kakao.com/v1/user/unlink")
+                .header("Authorization", "Bearer " + token)
+                .bodyValue("target_id_type=user_id&target_id=" + userId)
+                .retrieve()
+                .bodyToFlux(KakaoLeaveResponse.class);
 
         return response.blockFirst();
     }
