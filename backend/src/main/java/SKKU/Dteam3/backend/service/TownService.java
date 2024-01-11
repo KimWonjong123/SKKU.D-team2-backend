@@ -253,6 +253,19 @@ public class TownService {
                 () -> new IllegalArgumentException("해당 Town이 없습니다.")
         );
         isMemberOfTown(user, town);
+        requestDto = new AddTodoRequestDto(
+                requestDto.getContent(),
+                requestDto.getTodoClass(),
+                false,
+                requestDto.getEndDate(),
+                requestDto.getMon(),
+                requestDto.getTue(),
+                requestDto.getWed(),
+                requestDto.getThu(),
+                requestDto.getFri(),
+                requestDto.getSat(),
+                requestDto.getSun()
+        );
         AddTodoResponseDto addTodoResponseDto = todoService.addTownTodo(requestDto, user, town);
         return new AddTownTodoResponseDto(addTodoResponseDto.getCreatedAt(), addTodoResponseDto.getId());
     }
