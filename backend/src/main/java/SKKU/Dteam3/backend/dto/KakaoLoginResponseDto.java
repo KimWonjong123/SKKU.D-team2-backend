@@ -5,7 +5,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class TokenResponseDto {
+public class KakaoLoginResponseDto {
     private String accessToken;
     private String refreshToken;
+    private String profileImg;
 }

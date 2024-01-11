@@ -2,14 +2,11 @@ package SKKU.Dteam3.backend.jwt;
 
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.KakaoTokenInfoResponse;
-import SKKU.Dteam3.backend.dto.TokenResponseDto;
 import SKKU.Dteam3.backend.oauth.KakaoApi;
 import SKKU.Dteam3.backend.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SecurityException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
