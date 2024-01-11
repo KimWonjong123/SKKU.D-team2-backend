@@ -22,13 +22,22 @@ public class User {
     @NotNull
     private LocalDateTime createdAt;
 
-    public User(Long id, String name) {
+    @NotNull
+    @Column(columnDefinition = "TEXT")
+    private String profileImg;
+
+    public User(Long id, String name, String profileImg) {
         this.id = id;
         this.name = name;
+        this.profileImg = profileImg;
         this.createdAt = LocalDateTime.now();
     }
 
     public void changeName(String name) {
         this.name = name;
+    }
+
+    public void changeProfileImg(String profileImg) {
+        this.profileImg = profileImg;
     }
 }

@@ -36,7 +36,7 @@ public class UserService {
 
     private final KakaoApi kakaoApi;
 
-    public void saveOrUpdate(KakaoTokenResponse kakaoTokenResponse) {
+    public KakaoLoginResponseDto saveOrUpdate(KakaoTokenResponse kakaoTokenResponse) {
         KakaoUserInfoResponse kakaoUserInfoResponse = kakaoApi.getUserInfo(kakaoTokenResponse.getAccess_token());
         KakaoAccount kakaoAccount = kakaoUserInfoResponse.getKakao_account();
         KakaoProfile kakaoProfile = kakaoAccount.getProfile();
@@ -45,12 +45,19 @@ public class UserService {
             User user = userOptional.get();
             if (!user.getName().equals(kakaoProfile.getNickname())) {
                 user.changeName(kakaoProfile.getNickname());
-                userRepository.update(user);
             }
+            if  (!user.getProfileImg().equals(kakaoProfile.getThumbnail_image_url())){
+                user.changeProfileImg(kakaoProfile.getThumbnail_image_url());
+            }
+            userRepository.update(user);
         } else {
-            User user = new User(kakaoUserInfoResponse.getId(), kakaoProfile.getNickname());
+            User user = new User(kakaoUserInfoResponse.getId(), kakaoProfile.getNickname(), kakaoProfile.getThumbnail_image_url());
             userRepository.save(user);
         }
+        return new KakaoLoginResponseDto(
+                kakaoTokenResponse.getAccess_token(),
+                kakaoTokenResponse.getRefresh_token(),
+                kakaoProfile.getThumbnail_image_url());
     }
 
     public MemoResponseDto getMemo(Long userId, User user, LocalDate date) {
