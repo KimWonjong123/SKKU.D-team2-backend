@@ -36,4 +36,11 @@ public class TownMemberService {
             townMemberRepository.delete(townMember);
         }
     }
+
+    public void removeMemberShip(Long townId, Long userId) {
+        TownMember townMember = townMemberRepository.findByTownAndUser(townId, userId).orElseThrow(
+                () -> new IllegalArgumentException("해당 가입 정보가 없습니다.")
+        );
+       townMemberRepository.delete(townMember);
+    }
 }

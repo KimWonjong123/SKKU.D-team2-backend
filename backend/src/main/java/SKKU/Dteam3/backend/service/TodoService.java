@@ -284,6 +284,12 @@ public class TodoService {
         return new CheerResponseDto(LocalDateTime.now(), true);
     }
 
+    public void deleteUserTownTodo(User user, Town town) {
+        List<Todo> todoList = todoRepository.findTodosByTownId(town.getId(), user.getId());
+        for(Todo todo : todoList){
+            todoRepository.delete(todo);
+        }
+    }
 
 
     private void checkPermission(Todo todo, User user) {

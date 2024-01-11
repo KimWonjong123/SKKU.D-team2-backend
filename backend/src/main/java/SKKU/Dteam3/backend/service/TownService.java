@@ -167,6 +167,8 @@ public class TownService {
         if(!townMemberService.saveMemberShip(user,town).equals(user.getId())){
             throw new RuntimeException("타운 멤버 저장에 실패하였습니다");
         }
+        town.increaseMemberNum();
+        townRepository.update(town);
         List<User> users =new ArrayList<>();
         users.add(user);
         List<AddTodoRequestDto> requestDtoList = todoService.getTownTodo(town);
@@ -186,6 +188,19 @@ public class TownService {
             ),user, town);
         }
         return new joinTownResponseDto(town.getId(), LocalDateTime.now());
+    }
+
+    public void expelMember(User user, Long townId, Long userId) {
+        Town town = townRepository.findByTownId(townId).orElseThrow(
+                () -> new IllegalArgumentException("해당 Town이 없습니다.")
+        );
+        isLeaderOfTown(user,town);
+        townMemberService.removeMemberShip(townId, userId);
+        deleteTownTodo(user, town);
+    }
+
+    private void deleteTownTodo(User user, Town town) {
+        todoService.deleteUserTownTodo(user, town);
     }
 
     private void isLeaderOfTown(User user, Town town) {

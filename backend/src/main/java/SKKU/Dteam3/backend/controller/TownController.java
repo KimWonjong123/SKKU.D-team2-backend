@@ -24,7 +24,7 @@ public class TownController {
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public ListDto<ShowMyTownsResponseDto> showMyTowns(Authentication authentication){
+    public ListDto<ShowMyTownsResponseDto> showMyTowns(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return ListDto.createTownList(townService.showMyTowns(user));
     }
@@ -32,9 +32,9 @@ public class TownController {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public AddTownResponseDto addTown (@RequestPart(value = "dto") AddTownRequestDto requestDto,
-                                       @RequestPart(value = "file") MultipartFile thumbnailFile,
-                                       Authentication authentication){
+    public AddTownResponseDto addTown(@RequestPart(value = "dto") AddTownRequestDto requestDto,
+                                      @RequestPart(value = "file") MultipartFile thumbnailFile,
+                                      Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.addTown(
                 user,
@@ -42,9 +42,10 @@ public class TownController {
                 thumbnailFile
         );
     }
+
     @GetMapping("/{townId}")
     @ResponseStatus(HttpStatus.OK)
-    public ShowMyTownResponseDto showMyTown (@Valid @PathVariable Long townId, Authentication authentication){
+    public ShowMyTownResponseDto showMyTown(@Valid @PathVariable Long townId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.showMyTown(
                 user,
@@ -55,7 +56,7 @@ public class TownController {
     @PostMapping("/{townId}")
     @ResponseStatus(HttpStatus.CREATED)
     public ModifyMyTownResponseDto modifyMyTown(@Valid @PathVariable Long townId,
-                                                @RequestBody AddTownRequestDto requestDto, Authentication authentication){
+                                                @RequestBody AddTownRequestDto requestDto, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.modifyMyTown(
                 user,
@@ -67,9 +68,9 @@ public class TownController {
     @DeleteMapping("/{townId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMyTown(@Valid @PathVariable Long townId,
-                             Authentication authentication){
+                             Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        townService.deleteTown(user,townId);
+        townService.deleteTown(user, townId);
     }
 
     @GetMapping("/{townId}/image")
@@ -81,28 +82,28 @@ public class TownController {
 
     @GetMapping("/{townId}/invitelink")
     @ResponseStatus(HttpStatus.OK)
-    public String getInviteLink(@Valid @PathVariable Long townId, Authentication authentication){
+    public String getInviteLink(@Valid @PathVariable Long townId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.getInviteLinkHash(townId, user);
     }
 
     @PostMapping("/{townId}/invitelink")
     @ResponseStatus(HttpStatus.CREATED)
-    public String updateInviteLink(@Valid @PathVariable Long townId, Authentication authentication){
+    public String updateInviteLink(@Valid @PathVariable Long townId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.updateInviteLinkHash(townId, user);
     }
 
     @GetMapping("/invitelink/{invitelink}")
     @ResponseStatus(HttpStatus.OK)
-    public inviteTownResponseDto getInvitedTownInfo(@Valid @PathVariable(value = "invitelink")  String inviteLink, Authentication authentication){
+    public inviteTownResponseDto getInvitedTownInfo(@Valid @PathVariable(value = "invitelink") String inviteLink, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.findTownByInviteLink(inviteLink, user);
     }
 
     @PostMapping("/invitelink/{invitelink}")
     @ResponseStatus(HttpStatus.CREATED)
-    public joinTownResponseDto joinTown(@Valid @PathVariable(value = "invitelink") String inviteLink, Authentication authentication){
+    public joinTownResponseDto joinTown(@Valid @PathVariable(value = "invitelink") String inviteLink, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return townService.joinTown(
                 inviteLink,
@@ -110,4 +111,24 @@ public class TownController {
         );
     }
 
+    @DeleteMapping("/{townId}/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void expelMember(@Valid @PathVariable Long townId, @PathVariable Long userId, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        townService.expelMember(
+                user,
+                townId,
+                userId
+        );
+    }
+
+    @PatchMapping("/{townId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void leaveMember(@Valid @PathVariable Long townId, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        townService.leaveMember(
+                user,
+                townId
+        )
+    }
 }
