@@ -44,9 +44,17 @@ public class AlarmService {
                 requestDto.getTownName(),
                 requestDto.getContent()
         );
+        maintainMaxNumberOfAlarm(toUser);
         alarmRepository.save(alarm);
         return new sendAlarmResponseDto(
                 alarm.getId(),
                 alarm.getCreatedAt());
+    }
+
+    private void maintainMaxNumberOfAlarm(User toUser) {
+        if(alarmRepository.countAlarm(toUser.getId()) > MAX_ALARM){
+            Alarm oldestAlarm = alarmRepository.findOldestOneByUserId(toUser.getId());
+            alarmRepository.delete(oldestAlarm);
+        }
     }
 }
