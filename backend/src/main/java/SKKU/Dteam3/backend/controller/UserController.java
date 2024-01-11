@@ -4,6 +4,7 @@ import SKKU.Dteam3.backend.domain.TodoDetail;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.*;
 import SKKU.Dteam3.backend.service.UserService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

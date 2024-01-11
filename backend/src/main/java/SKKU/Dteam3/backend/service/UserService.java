@@ -177,6 +177,10 @@ public class UserService {
         return ListDto.createGuestbooks(guestbookRepository.findByUserAndDate(user, LocalDate.now()));
     }
 
+    public void leave(User user) {
+        userRepository.delete(user);
+    }
+
     private User validateUserId(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {

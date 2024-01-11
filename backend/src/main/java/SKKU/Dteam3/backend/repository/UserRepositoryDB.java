@@ -27,6 +27,11 @@ public class UserRepositoryDB implements UserRepository {
     }
 
     @Override
+    public void delete(User user) {
+        em.remove(em.contains(user) ? user : em.merge(user));
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         User user = em.find(User.class, id);
         return Optional.ofNullable(user);

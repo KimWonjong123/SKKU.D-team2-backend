@@ -24,6 +24,11 @@ public class UserRepositoryMem implements UserRepository {
     }
 
     @Override
+    public void delete(User user) {
+        store.remove(user.getId());
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         return Optional.ofNullable(store.get(id));
     }

@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String token = getParseJwt(request.getHeader("Authorization"));
 
-        if (request.getServletPath().startsWith("/oauth")) {
+        if (request.getServletPath().startsWith("/oauth/callback")) {
             filterChain.doFilter(request, response);
             return;
         }
