@@ -241,6 +241,12 @@ public class TownService {
                 achieveList
         );
     }
+    public TownAchieveResponseDto getTownAchieve(User user, Long townId, LocalDate localDate) {
+        memberAchieveListResponseDto memberAchieveList = getMemberAchieveList(user, townId, localDate);
+        return new TownAchieveResponseDto(memberAchieveList.getTownId(),
+                memberAchieveList.getMembers().stream().mapToInt(memberAchieveResponseDto::getAchieve).sum()/memberAchieveList.getMembers().size()
+        );
+    }
 
     private void deleteTownTodo(User user, Town town) {
         todoService.deleteUserTownTodo(user, town);

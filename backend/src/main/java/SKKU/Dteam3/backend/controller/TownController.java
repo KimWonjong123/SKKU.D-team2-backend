@@ -147,4 +147,17 @@ public class TownController {
                 Objects.requireNonNullElseGet(date, LocalDate::now)
         );
     }
+
+    @GetMapping("/{townId}/achieve/total")
+    @ResponseStatus(HttpStatus.OK)
+    public TownAchieveResponseDto getTownAchieve(@Valid @PathVariable Long townId,
+                                                             Authentication authentication,
+                                                             @RequestParam(required = false) @PastOrPresent LocalDate date){
+        User user = (User) authentication.getPrincipal();
+        return townService.getTownAchieve(
+                user,
+                townId,
+                Objects.requireNonNullElseGet(date, LocalDate::now)
+        );
+    }
 }
