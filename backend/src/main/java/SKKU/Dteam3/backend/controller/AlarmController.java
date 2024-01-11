@@ -3,14 +3,15 @@ package SKKU.Dteam3.backend.controller;
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.ListDto;
 import SKKU.Dteam3.backend.dto.MyAlarmDto;
+import SKKU.Dteam3.backend.dto.sendAlarmRequestDto;
+import SKKU.Dteam3.backend.dto.sendAlarmResponseDto;
 import SKKU.Dteam3.backend.service.AlarmService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/alarm")
@@ -25,6 +26,19 @@ public class AlarmController {
         User user = (User) authentication.getPrincipal();
         return alarmService.getMyAlarm(
                 user
+        );
+    }
+
+    @PostMapping("/{userId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public sendAlarmResponseDto sendAlarm(@Valid @PathVariable Long userId,
+            @RequestBody sendAlarmRequestDto requestDto,
+            Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return alarmService.sendAlarm(
+                userId,
+                user,
+                requestDto
         );
     }
 }

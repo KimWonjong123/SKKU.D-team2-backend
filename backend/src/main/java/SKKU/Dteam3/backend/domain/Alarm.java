@@ -10,6 +10,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -41,5 +43,14 @@ public class Alarm {
 
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
+
+    public Alarm(User user, User fromUser, Boolean isTown, @Nullable Optional<String> townName, String content) {
+        this.user = user;
+        this.fromUser = fromUser;
+        this.isTown = isTown;
+        this.townName = Objects.requireNonNull(townName).orElse("null");
+        this.content = content;
+        this.createdAt = LocalDateTime.now();
+    }
 
 }

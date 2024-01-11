@@ -21,6 +21,6 @@ public class MyAlarmDto {
     public MyAlarmDto(Alarm alarm) {
         this.createdAt = alarm.getCreatedAt();
         this.content = alarm.getContent();
-        this.senderName =  alarm.getIsTown().equals(true)? alarm.getTownName() : alarm.getUser().getName();
+        this.senderName =  alarm.getIsTown().equals(true)? String.valueOf(alarm.getTownName()) : alarm.getUser().getName();
     }
 }
