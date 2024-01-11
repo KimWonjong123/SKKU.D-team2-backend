@@ -1,9 +1,7 @@
 package SKKU.Dteam3.backend.oauth;
 
-import SKKU.Dteam3.backend.dto.KakaoLeaveResponse;
-import SKKU.Dteam3.backend.dto.KakaoTokenInfoResponse;
-import SKKU.Dteam3.backend.dto.KakaoTokenResponse;
-import SKKU.Dteam3.backend.dto.KakaoUserInfoResponse;
+import SKKU.Dteam3.backend.dto.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -11,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 @Component
+@Slf4j
 public class KakaoApi {
 
     private final WebClient webClient;
@@ -70,6 +69,19 @@ public class KakaoApi {
                 .bodyValue("target_id_type=user_id&target_id=" + userId)
                 .retrieve()
                 .bodyToFlux(KakaoLeaveResponse.class);
+
+        return response.blockFirst();
+    }
+
+    public KakaoTokenRefreshResponseDto refresh(String refreshToken) {
+        String uri = TOKEN_URI;
+
+        Flux<KakaoTokenRefreshResponseDto> response = webClient.post()
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue("grant_type=refresh_token&client_id=" + CLIENT_ID + "&refresh_token=" + refreshToken)
+                .retrieve()
+                .bodyToFlux(KakaoTokenRefreshResponseDto.class);
 
         return response.blockFirst();
     }
