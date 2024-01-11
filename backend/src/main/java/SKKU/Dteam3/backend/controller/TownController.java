@@ -67,10 +67,10 @@ public class TownController {
 
     @DeleteMapping("/{townId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMyTown(@Valid @PathVariable Long townId,
+    public deleteMyTownResponseDto deleteMyTown(@Valid @PathVariable Long townId,
                              Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        townService.deleteTown(user, townId);
+        return townService.deleteTown(user, townId);
     }
 
     @GetMapping("/{townId}/image")
@@ -82,16 +82,16 @@ public class TownController {
 
     @GetMapping("/{townId}/invitelink")
     @ResponseStatus(HttpStatus.OK)
-    public String getInviteLink(@Valid @PathVariable Long townId, Authentication authentication) {
+    public InviteLinkHashResponseDto getInviteLink(@Valid @PathVariable Long townId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return townService.getInviteLinkHash(townId, user);
+        return new InviteLinkHashResponseDto(townService.getInviteLinkHash(townId, user));
     }
 
     @PostMapping("/{townId}/invitelink")
     @ResponseStatus(HttpStatus.CREATED)
-    public String updateInviteLink(@Valid @PathVariable Long townId, Authentication authentication) {
+    public InviteLinkHashResponseDto updateInviteLink(@Valid @PathVariable Long townId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return townService.updateInviteLinkHash(townId, user);
+        return new InviteLinkHashResponseDto(townService.updateInviteLinkHash(townId, user));
     }
 
     @GetMapping("/invitelink/{invitelink}")
