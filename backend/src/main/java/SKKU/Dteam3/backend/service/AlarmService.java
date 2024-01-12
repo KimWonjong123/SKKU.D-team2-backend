@@ -24,7 +24,7 @@ public class AlarmService {
 
     private final UserRepository userRepository;
 
-    @Value("${alarm.max-count")
+    @Value("${alarm.max-count}")
     private static int MAX_ALARM;
 
     public ListDto<MyAlarmDto> getMyAlarm(User user) {

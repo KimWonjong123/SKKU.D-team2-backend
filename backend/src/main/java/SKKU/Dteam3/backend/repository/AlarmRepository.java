@@ -33,7 +33,7 @@ public class AlarmRepository {
     }
     
     public Alarm findOldestOneByUserId(Long userId){
-        return em.createQuery("select m FROM  Alarm m WHERE m.user.id = :userId", Alarm.class)
+        return em.createQuery("select m FROM  Alarm m WHERE m.user.id = :userId order by m.createdAt", Alarm.class)
                 .getSingleResult();
     }
 }
