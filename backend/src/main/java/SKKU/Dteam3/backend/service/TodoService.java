@@ -35,6 +35,8 @@ public class TodoService {
 
     private final CheerRepository cheerRepository;
 
+    private final AlarmService alarmService;
+
     @Value("${poke.max-count}")
     private static int MAX_POKE;
 
@@ -292,6 +294,14 @@ public class TodoService {
                 todo
         );
         pokeRepository.save(poke);
+        alarmService.sendAlarm(
+                todo.getUser().getId(),
+                user,
+                new sendAlarmRequestDto(false,
+                        null,
+                        user.getName() + "님이 \"" +todo.getContent() +"\"(을/를) 콕 찔렀습니다."
+                )
+        );
         return new PokeResponseDto(LocalDateTime.now(), MAX_POKE - 1 - pokesNum);
     }
 
@@ -307,6 +317,15 @@ public class TodoService {
                 todo
         );
         cheerRepository.save(cheer);
+
+        alarmService.sendAlarm(
+                todo.getUser().getId(),
+                user,
+                new sendAlarmRequestDto(false,
+                        null,
+                        user.getName() + "님이 \"" +todo.getContent() +"\"(을/를) 칭찬하였습니다."
+                )
+        );
         return new CheerResponseDto(LocalDateTime.now(), true);
     }
 
