@@ -202,6 +202,8 @@ public class TownService {
         isLeaderOfTown(user,town);
         townMemberService.removeMemberShip(townId, userId);
         deleteTownTodo(user, town);
+        town.decreaseMemberNum();
+        townRepository.update(town);
         return true;
     }
     public Boolean leaveMember(User user, Long townId) {
@@ -211,6 +213,8 @@ public class TownService {
         isMemberOfTown(user, town);
         townMemberService.removeMemberShip(townId,user.getId());
         deleteTownTodo(user,town);
+        town.decreaseMemberNum();
+        townRepository.update(town);
         return true;
     }
 
