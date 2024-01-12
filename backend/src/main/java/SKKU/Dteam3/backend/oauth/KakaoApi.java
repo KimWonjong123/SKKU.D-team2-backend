@@ -83,6 +83,11 @@ public class KakaoApi {
                 .retrieve()
                 .bodyToFlux(KakaoTokenRefreshResponseDto.class);
 
-        return response.blockFirst();
+        KakaoTokenRefreshResponseDto responseDto = response.blockFirst();
+        if (responseDto.getRefresh_token() == null) {
+            responseDto.setRefresh_token(refreshToken);
+        }
+
+        return responseDto;
     }
 }
