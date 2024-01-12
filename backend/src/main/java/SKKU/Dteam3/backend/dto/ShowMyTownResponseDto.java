@@ -16,5 +16,5 @@ public class ShowMyTownResponseDto {
 
     private String leader;
 
-    private ListDto<TownTodoInfoDto> routineInfoList;
+    private ListDto<AddTodoRequestDto> routineInfoList;
 }

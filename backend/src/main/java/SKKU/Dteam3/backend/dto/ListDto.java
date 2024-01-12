@@ -35,8 +35,8 @@ public class ListDto <T> {
     }
 
 
-    public static ListDto<TownTodoInfoDto> createTownTodoInfo(List<AddTodoRequestDto> townTodoInfo) {
-        return new ListDto<>(townTodoInfo.size(), townTodoInfo.stream().map(TownTodoInfoDto::new).collect(Collectors.toList()));
+    public static ListDto<AddTodoRequestDto> createTownTodoInfo(List<AddTodoRequestDto> townTodoInfo) {
+        return new ListDto<>(townTodoInfo.size(), townTodoInfo);
     }
 
     public static ListDto<GuestbookResponseDto> createGuestbooks(List<Guestbook> guestbooks) {
