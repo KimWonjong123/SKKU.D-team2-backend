@@ -77,5 +77,16 @@ public class RoutineInfo {
         this.sun = sun;
     }
 
+    public void updateRoutineInfo(LocalDate endDate, Boolean mon, Boolean tue, Boolean wed, Boolean thu, Boolean fri, Boolean sat, Boolean sun) {
+        this.endDate = endDate;
+        this.mon = mon;
+        this.tue = tue;
+        this.wed = wed;
+        this.thu = thu;
+        this.fri = fri;
+        this.sat = sat;
+        this.sun = sun;
+    }
+
 
 }
