@@ -2,16 +2,20 @@ package SKKU.Dteam3.backend.controller;
 
 import SKKU.Dteam3.backend.domain.User;
 import SKKU.Dteam3.backend.dto.KakaoLeaveResponse;
+import SKKU.Dteam3.backend.dto.KakaoTokenRefreshResponseDto;
 import SKKU.Dteam3.backend.dto.KakaoTokenResponse;
 import SKKU.Dteam3.backend.dto.KakaoLoginResponseDto;
 import SKKU.Dteam3.backend.oauth.KakaoApi;
 import SKKU.Dteam3.backend.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/oauth")
@@ -42,11 +46,14 @@ public class OAuthController {
         return responseDto;
     }
 
-//    @PostMapping("/kakao/refresh")
-//    @ResponseStatus(HttpStatus.OK)
-//    public TokenResponseDto kakaoRefresh(HttpServletRequest req) {
-//        String token = req.getCookies()[0].getValue();
-//        TokenResponseDto responseDto = kakaoApi.refresh(token);
-//        return responseDto;
-//    }
+    @PostMapping("/kakao/refresh")
+    @ResponseStatus(HttpStatus.OK)
+    public KakaoTokenRefreshResponseDto kakaoRefresh(HttpServletRequest req) {
+        Cookie[] cookies = req.getCookies();
+        String token = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("refresh"))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("refresh token이 존재하지 않습니다")).getValue();
+        KakaoTokenRefreshResponseDto responseDto = kakaoApi.refresh(token);
+        return responseDto;
+    }
 }
