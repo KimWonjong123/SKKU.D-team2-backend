@@ -35,6 +35,8 @@ public class TownService {
 
     private final TodoService todoService;
 
+    private final AlarmService alarmService;
+
     private final TodoRepository todoRepository;
 
     private final ResultRepository resultRepository;
@@ -174,8 +176,6 @@ public class TownService {
         }
         town.increaseMemberNum();
         townRepository.update(town);
-        List<User> users =new ArrayList<>();
-        users.add(user);
         List<AddTodoRequestDto> requestDtoList = todoService.getTownTodo(town);
         for(AddTodoRequestDto dto : requestDtoList){
             todoService.addTownTodo(new AddTodoRequestDto(
@@ -192,6 +192,12 @@ public class TownService {
                     dto.getSun()
             ),user, town);
         }
+        alarmService.sendAlarm(user.getId(),
+                town.getLeader(),
+                new sendAlarmRequestDto(true,
+                        town.getName(),
+                        town.getName() + " 모임에 가입되었습니다.")
+        );
         return new joinTownResponseDto(town.getId(), LocalDateTime.now());
     }
 
@@ -204,6 +210,12 @@ public class TownService {
         deleteTownTodo(user, town);
         town.decreaseMemberNum();
         townRepository.update(town);
+        alarmService.sendAlarm(user.getId(),
+                town.getLeader(),
+                new sendAlarmRequestDto(true,
+                        town.getName(),
+                        town.getName() + " 모임에서 강퇴되었습니다.")
+        );
         return true;
     }
     public Boolean leaveMember(User user, Long townId) {
@@ -215,6 +227,12 @@ public class TownService {
         deleteTownTodo(user,town);
         town.decreaseMemberNum();
         townRepository.update(town);
+        alarmService.sendAlarm(user.getId(),
+                town.getLeader(),
+                new sendAlarmRequestDto(true,
+                        town.getName(),
+                        town.getName() + " 모임에서 탈퇴하였습니다.")
+        );
         return true;
     }
 
