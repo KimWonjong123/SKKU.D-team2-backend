@@ -82,6 +82,43 @@ public class TodoService {
         resultRepository.save(result);
         return new AddTodoResponseDto(todo.getId(), todo.getCreatedAt());
     }
+
+    public AddTodoResponseDto updateTodo(Long todoId, AddTodoRequestDto requestDto , User user) {
+        Optional<Todo> todoOptional = todoRepository.findById(todoId);
+        Todo todo = todoOptional.orElseThrow(
+                () -> new IllegalArgumentException("해당 Todo가 없습니다.")
+        );
+        if (!todo.getUser().equals(user)) {
+            throw new IllegalArgumentException("해당 Todo에 대한 권한이 없습니다.");
+        }
+        if (!requestDto.getRoutine() && todo.getRoutineInfo() != null ||
+            requestDto.getRoutine() && todo.getRoutineInfo() == null) {
+            throw new IllegalArgumentException("루틴 여부는 변경할 수 없습니다.");
+        }
+        if (requestDto.getRoutine()) {
+            // 루틴일 경우
+            RoutineInfo routineInfo = todo.getRoutineInfo();
+            if (routineInfo.getTown() != null) {
+                if (!routineInfo.getStartDate().equals(routineInfo.getEndDate())) {
+                    // 타운 루틴인 경우
+                    throw new IllegalArgumentException("타운 루틴은 수정할 수 없습니다.");
+                }
+                //타운 루틴이 아닌 개인이 추가한 타운 투두인 경우
+                updateRoutineInfo(routineInfo, routineInfo.getEndDate(), requestDto);
+            }
+            else {
+                // 개인 루틴인 경우
+                updateRoutineInfo(routineInfo, requestDto.getEndDate().toLocalDate(), requestDto);
+            }
+            todo.modifyTodo(requestDto);
+        } else {
+            // 루틴이 아닐 경우
+            todo.modifyTodo(requestDto);
+        }
+        todoRepository.update(todo);
+        return new AddTodoResponseDto(todo.getId(), todo.getCreatedAt());
+    }
+
     public AddTodoResponseDto addTownTodo(AddTodoRequestDto requestDto, User user, Town town) {
         Todo todo = null;
         if (requestDto.getRoutine()) {
@@ -364,6 +401,25 @@ public class TodoService {
     private boolean isSameTome(User userA, User userB)
     {
         return townMemberRepository.countByTwoUserId(userA.getId(), userB.getId()) > 0;
+    }
+
+    private void updateRoutineInfo(RoutineInfo routineInfo, LocalDate endDate, AddTodoRequestDto requestDto) {
+        try {
+            routineInfo.updateRoutineInfo(
+                    endDate,
+                    requestDto.getMon(),
+                    requestDto.getTue(),
+                    requestDto.getWed(),
+                    requestDto.getThu(),
+                    requestDto.getFri(),
+                    requestDto.getSat(),
+                    requestDto.getSun()
+            );
+            routineInfoRepository.update(routineInfo);
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("루틴의 상세정보가 누락되었습니다.");
+        }
+        routineInfoRepository.update(routineInfo);
     }
 
 }

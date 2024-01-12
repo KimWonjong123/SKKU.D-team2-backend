@@ -26,6 +26,21 @@ public class TodoController {
         );
     }
 
+    @PatchMapping("/{todoId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AddTodoResponseDto updateTodo(
+            @PathVariable("todoId") Long todoId,
+            @Valid @RequestBody AddTodoRequestDto requestDto,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        return todoService.updateTodo(
+                todoId,
+                requestDto,
+                user
+        );
+    }
+
     @PatchMapping("/{todoId}/check")
     @ResponseStatus(HttpStatus.OK)
     public CheckTodoResponseDto checkTodo(@PathVariable("todoId") Long todoId, Authentication authentication) {
